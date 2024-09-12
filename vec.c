@@ -1,10 +1,10 @@
 #include <math.h>
+#include <stdint.h>
 #include "vec.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
-
-
+#include <stdlib.h>
 
 void print_vec(Vec3 v) {
   printf("vec: %f %f %f\n", v.x, v.y, v.z);
@@ -62,7 +62,7 @@ double len_sq(Vec3 v) {
   return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 
-double dot(Vec3 v1, Vec3 v2) {
+double vec3_dot(Vec3 v1, Vec3 v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
@@ -85,8 +85,7 @@ Vec3 random_vec3(float min, float max) {
 
 Vec3 random_in_unit_sphere() {
   while(true) {
-    Interval _interval = {.min=-1.0, .max=1.0};
-    Vec3 p = random_vec3(_interval);
+    Vec3 p = random_vec3(-1.0f, 1.0f);
     if(len_sq(p) < 1.0) {
       return p;
     }
@@ -100,7 +99,7 @@ Vec3 random_unit_vec3_sphere() {
 
 Vec3 random_on_hemisphere(Vec3 normal) {
   Vec3 on_unit_sphere = random_unit_vec3_sphere();
-  if (dot(on_unit_sphere, normal) > 0.0) {
+  if (dot(on_unit_sphere, normal) > 0.0f) {
     return on_unit_sphere;
   } else {
     return negate_vec3(on_unit_sphere);
@@ -112,9 +111,6 @@ Vec3 double2vec(double scalar) {
   return vec;
 }
 
-
-
-
 void seed_random() {
     srand((unsigned int)time(NULL));
     // DEBUG_PRINT("Random number generator seeded with time\n");
@@ -125,11 +121,11 @@ double degrees2rads(double degrees) {
 }
 
 double random_float() {
-  uint64_t rand = random_uint64(&GLOBAL_MT_STATE);
-  return (rand >> 11) * (1.0/9007199254740992.0);
+    uint32_t r = ((uint32_t)rand()) | rand();
+    return (double) r / ((uint32_t)RAND_MAX | RAND_MAX);
 }
 
-double random_double_interval(float min , float max) {
+double random_float_interval(float min , float max) {
   // Returns a random real in [min,max).
-  return min + (max - min) * random_double();
+  return min + (max - min) * random_float();
 }
