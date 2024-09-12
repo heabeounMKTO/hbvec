@@ -5,7 +5,7 @@
 #include <math.h>
 
 
-#if defined(__SSE__) && defined(__SSE2__)
+#if defined(__SSE__) && defined(__SSE2__) 
 #include <xmmintrin.h>
 #include <emmintrin.h>
 typedef struct {
@@ -28,7 +28,6 @@ typedef struct {
   __m128 data;
 } Vec3_f;
 
-
 typedef struct {
   __m256 data;
 } Vec3_d; 
@@ -46,7 +45,6 @@ typedef struct {
 #endif
 
 // your everyday float32 vec
-
 // f32 => type 0 , 
 // f64 => type 1
 typedef union {
@@ -54,6 +52,7 @@ typedef union {
   Vec3_f vec3_f;
   Vec3_d vec3_d;
 } Vec3;
+
 void print_vec(Vec3 v);
 Vec3 float2vec(float f);
 Vec3 double2vec(double f);
