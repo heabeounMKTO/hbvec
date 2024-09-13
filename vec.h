@@ -22,7 +22,7 @@ typedef struct {
 } available_isa;
 
 typedef struct {
-  float x,y,z;
+  float32x4_t data;
 } Vec3;
 
 #elif __arm__ || defined(_M_ARM)

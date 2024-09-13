@@ -321,9 +321,70 @@ float vec3z(Vec3 v) {
   return v.data[2];
 }
 
-#elif __arch64__ || defined(_M_ARM64)
+#elif __aarch64__ 
 #include <arm_neon.h>
+Vec3 vec3_new(float x, float y, float z) {
+  Vec3 v;
+  float32x4_t vec = {x,y,z,0.0f};
+  v.data = vec;
+  return v;
+}
+void vec3_print(Vec3 v) {
+    float values[4];
+    vst1q_f32(values, v.data); 
+  printf("x: %f, y: %f, z: %f\n", values[0], values[1], values[2]);
+}
 
+Vec3 vec3_add(Vec3 v1, Vec3 v2) {
+  Vec3 v;
+  float32x4_t av = vaddq_f32(v1.data, v2.data);
+  v.data = av;
+  return v;
+}
+
+Vec3 vec3_from_float(float f) {
+  Vec3 v;
+  float32x4_t vec = {f,f,f,0.0f};
+  v.data = vec;
+  return v;
+}
+
+Vec3 vec3_negate(Vec3 v) {
+  float32x4_t haha = {-1.0,-1.0,-1.0,-1.0};
+  Vec3 neg = {.data=vmulq_f32(v.data, haha)};
+  return neg;
+}
+
+Vec3 vec3_from_int(int i) {
+  Vec3 v;
+  float f = (float) i;
+  float32x4_t vec = {f,f,f,0.0f};
+  v.data = vec;
+  return v;
+}
+
+Vec3 vec3_div(Vec3 v1, Vec3 v2) {
+  Vec3 v;
+  float32x4_t dv = vdivq_f32(v1.data, v2.data);
+  v.data = dv;
+  return v;
+}
+
+Vec3 vec3_mul(Vec3 v1, Vec3 v2) {
+  Vec3 v;
+  float32x4_t mv = vmulq_f32(v1.data, v2.data);
+  v.data = mv;
+  return v;
+}
+
+Vec3 vec3_sub(Vec3 v1, Vec3 v2) {
+  Vec3 v;
+  float32x4_t sv = vsubq_f32(v1.data, v2.data);
+  v.data = sv;
+  return v;
+}
+
+float vec3_dot(Vec3 v1, Vec3 v2);
 
 #endif
 
