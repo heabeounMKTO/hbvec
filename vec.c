@@ -255,6 +255,14 @@ float vec3_dot(Vec3 v1, Vec3 v2)
   return result;
 }
 
+float vec3_length(Vec3 v) {
+  __m128 v_sq = _mm_mul_ps(v.data, v.data);
+  __m128 v_sqrt = _mm_rsqrt_ps(v_sq);
+  float result;
+  _mm_store_ss(&result, v_sqrt);
+  return result;
+}
+
 float vec3x(Vec3 v) {
   return v.data[0];
 }

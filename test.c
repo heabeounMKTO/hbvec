@@ -8,8 +8,10 @@ int main() {
   Vec3 v2 = vec3_from_float(4.0f);
   Vec3 mul_test = vec3_sub(v2, v);
   float dot_test = vec3_dot(v, v2);
+  float length = vec3_length(v);
   vec3_print(mul_test);
   printf("dot prod %f\n", dot_test);
+  printf("length %f\n", length);
   return 0;
 }
 
