@@ -39,6 +39,7 @@ Vec3 vec3_div(Vec3 v1, Vec3 v2);
 Vec3 vec3_mul(Vec3 v1, Vec3 v2);
 Vec3 vec3_sub(Vec3 v1, Vec3 v2);
 Vec3 vec3_unit(Vec3 v);
+
 float vec3_dot(Vec3 v1, Vec3 v2);
 float vec3_len_sq(Vec3 v);
 float vec3_length(Vec3 v);

@@ -1,4 +1,4 @@
-M_SSE:= -msse -msse2 -msse3
+SSE:= -msse -msse2 -msse3
 
 test:
-	gcc -msse -msse2 -msse3 test.c vec.c -o build/test && ./build/test
+	gcc ${SSE} -march=native test.c vec.c -O3 -ffast-math -lm -o build/test && ./build/test

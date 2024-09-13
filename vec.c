@@ -245,6 +245,7 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2) {
   return sub;
 }
 
+// sometimes slower than plain C?!
 float vec3_dot(Vec3 v1, Vec3 v2)
 {
   __m128 mul = _mm_mul_ps(v1.data, v2.data);
@@ -255,12 +256,14 @@ float vec3_dot(Vec3 v1, Vec3 v2)
   return result;
 }
 
+Vec3 vec3_unit(Vec3 v) {
+  float len = vec3_length(v);
+  return vec3_div(vec3_from_float(len), v);
+}
+
 float vec3_length(Vec3 v) {
-  __m128 v_sq = _mm_mul_ps(v.data, v.data);
-  __m128 v_sqrt = _mm_rsqrt_ps(v_sq);
-  float result;
-  _mm_store_ss(&result, v_sqrt);
-  return result;
+  float dot_v = vec3_dot(v, v);
+  return sqrtf(dot_v);
 }
 
 float vec3x(Vec3 v) {
