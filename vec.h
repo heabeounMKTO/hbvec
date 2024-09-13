@@ -53,14 +53,15 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2);
 Vec3 vec3_unit(Vec3 v);
 
 float vec3_dot(Vec3 v1, Vec3 v2);
-float vec3_len_sq(Vec3 v);
 float vec3_length(Vec3 v);
 float vec3x(Vec3 v);
 float vec3y(Vec3 v);
 float vec3z(Vec3 v);
-Vec3 random_in_unit_sphere();
-Vec3 random_unit_vec3_sphere();
-Vec3 random_on_hemisphere(Vec3 normal);
+
+
+// Vec3 random_in_unit_sphere();
+// Vec3 random_unit_vec3_sphere();
+// Vec3 random_on_hemisphere(Vec3 normal);
 
 
 

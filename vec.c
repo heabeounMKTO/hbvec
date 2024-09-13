@@ -69,6 +69,7 @@ available_isa get_cpu_intrinsics() {
 
 void print_available_isa() {
     printf("hbvec available ISAs\n");
+    printf("__x86_64__\n");
     printf("====================\n");
     available_isa isa = _AVAILABLE_ISA;
     printf("MMX: %d\n", isa.mmx);
@@ -166,6 +167,7 @@ available_isa get_cpu_intrinsics() {
 
 void print_available_isa() {
     printf("hbvec available ISAs\n");
+    printf("__aarch64__\n");
     printf("====================\n");
     available_isa isa = _AVAILABLE_ISA;
     printf("NEON: %d\n", isa.neon);
@@ -350,8 +352,8 @@ Vec3 vec3_from_float(float f) {
 }
 
 Vec3 vec3_negate(Vec3 v) {
-  float32x4_t haha = {-1.0,-1.0,-1.0,-1.0};
-  Vec3 neg = {.data=vmulq_f32(v.data, haha)};
+  
+  Vec3 neg = {.data=vmulq_f32(v.data,  vdupq_n_f32(-1.0))};
   return neg;
 }
 
@@ -384,7 +386,23 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2) {
   return v;
 }
 
-float vec3_dot(Vec3 v1, Vec3 v2);
+float vec3_dot(Vec3 v1, Vec3 v2) {
+  float32x4_t mul = vmulq_f32(v1.data, v2.data);
+  float32x2_t sum1 = vadd_f32(vget_low_f32(mul), vget_high_f32(mul)); // Add x and y
+  float result = vget_lane_f32(vpadd_f32(sum1, sum1), 0); 
+  return result;
+}
+
+
+float vec3_length(Vec3 v) {
+  float dot_v = vec3_dot(v, v);
+  return sqrtf(dot_v);
+}
+
+Vec3 vec3_unit(Vec3 v) {
+  float len = vec3_length(v);
+  return vec3_div(vec3_from_float(len), v);
+}
 
 #endif
 
