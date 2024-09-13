@@ -1,5 +1,3 @@
-#include <pmmintrin.h>
-#include <xmmintrin.h>
 #define RUAPU_IMPLEMENTATION
 #include "ruapu.h"
 
@@ -13,10 +11,9 @@
 #include <string.h>
 
 
+
+
 available_isa _AVAILABLE_ISA;
-
-
-
 /* get cpu intrinsics for different cpus */
 
 #if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
@@ -121,9 +118,8 @@ void print_available_isa() {
     printf("====================\n");
 }
 
-/// TODO: write print for ARM devices
-#elif __arch64__ || defined(_M_ARM64)
-const available_isa get_cpu_intrinsics() {
+#elif __aarch64__ 
+available_isa get_cpu_intrinsics() {
   ruapu_init();
   available_isa get_arm_isa;
   get_arm_isa.neon = ruapu_supports("neon");
@@ -165,12 +161,59 @@ const available_isa get_cpu_intrinsics() {
   get_arm_isa.svesha3 = ruapu_supports("svesha3");
   get_arm_isa.svesm4 = ruapu_supports("svesm4");
   get_arm_isa.amx = ruapu_supports("amx");
-  return get_isa;
+  return get_arm_isa;
 }
 
-#elif __arm__ || defined(_M_ARM)
-const available_isa get_cpu_intrinsics() {
-  ruapu_init();
+void print_available_isa() {
+    printf("hbvec available ISAs\n");
+    printf("====================\n");
+    available_isa isa = _AVAILABLE_ISA;
+    printf("NEON: %d\n", isa.neon);
+    printf("VFPv4: %d\n", isa.vfpv4);
+    printf("LSE: %d\n", isa.lse);
+    printf("CPUID: %d\n", isa.cpuid);
+    printf("ASIMDRDM: %d\n", isa.asimdrdm);
+    printf("ASIMDHP: %d\n", isa.asimdhp);
+    printf("ASIMDDP: %d\n", isa.asimddp);
+    printf("ASIMDFHM: %d\n", isa.asimdfhm);
+    printf("BF16: %d\n", isa.bf16);
+    printf("I8MM: %d\n", isa.i8mm);
+    printf("FRINT: %d\n", isa.frint);
+    printf("JSCVT: %d\n", isa.jscvt);
+    printf("FCMA: %d\n", isa.fcma);
+    printf("MTE: %d\n", isa.mte);
+    printf("MTE2: %d\n", isa.mte2);
+    printf("SVE: %d\n", isa.sve);
+    printf("SVE2: %d\n", isa.sve2);
+    printf("SVE-BF16: %d\n", isa.svebf16);
+    printf("SVE-I8MM: %d\n", isa.svei8mm);
+    printf("SVE-F32MM: %d\n", isa.svef32mm);
+    printf("SVE-F64MM: %d\n", isa.svef64mm);
+    printf("SME: %d\n", isa.sme);
+    printf("SME-F16F16: %d\n", isa.smef16f16);
+    printf("SME-F64F64: %d\n", isa.smef64f64);
+    printf("PMULL: %d\n", isa.pmull);
+    printf("CRC32: %d\n", isa.crc32);
+    printf("AES: %d\n", isa.aes);
+    printf("SHA1: %d\n", isa.sha1);
+    printf("SHA2: %d\n", isa.sha2);
+    printf("SHA3: %d\n", isa.sha3);
+    printf("SHA512: %d\n", isa.sha512);
+    printf("SM3: %d\n", isa.sm3);
+    printf("SM4: %d\n", isa.sm4);
+    printf("SVE-PMULL: %d\n", isa.svepmull);
+    printf("SVE-BITPERM: %d\n", isa.svebitperm);
+    printf("SVAES: %d\n", isa.svaes);
+    printf("SVE-SHA3: %d\n", isa.svesha3);
+    printf("SVE-SM4: %d\n", isa.svesm4);
+    printf("AMX: %d\n", isa.amx);
+    printf("====================\n");
+}
+
+
+
+#elif __arm__ 
+available_isa get_cpu_intrinsics() {
   available_isa get_mips_isa;
   get_mips_isa.msa = ruapu_supports("msa");
   get_mips_isa.mmi = ruapu_supports("mmi");
@@ -178,7 +221,7 @@ const available_isa get_cpu_intrinsics() {
   get_mips_isa.asx = ruapu_supports("asx");
   get_mips_isa.msa2 = ruapu_supports("msa2");
   get_mips_isa.crypto = ruapu_supports("crypto");
-  return get_isa;
+  return get_mips_isa;
 }
 #endif
 
@@ -277,6 +320,10 @@ float vec3y(Vec3 v) {
 float vec3z(Vec3 v) {
   return v.data[2];
 }
+
+#elif __arch64__ || defined(_M_ARM64)
+#include <arm_neon.h>
+
 
 #endif
 
