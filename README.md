@@ -1,4 +1,4 @@
 # hbvec
 my  vector library cos aint no way im writing it every time
 
-currently suppourt x86 SIMD instructions but i will add suppourt for more ISAs..
+currently has suppourt for NEON on aarch64 and SSE on x86_64
