@@ -428,6 +428,37 @@ Vec3 vec3_new(float x, float y, float z) {
   return v;
 }
 
+void vec3_print(Vec3 v) {
+  printf("x: %f, y: %f, z: %f\n", v.x, v.y, v.z);
+}
+
+
+Vec3 vec3_from_float(float f) {
+  Vec3 v = {.x=f, .y=f, .z=f};
+  return v;
+}
+
+Vec3 vec3_negate(Vec3 v) {
+  Vec3 _nv = { .x= -1.0 * v.x, .y = -1.0 * v.y, .z = -1.0 * v.z };
+  return _nv;
+}
+
+Vec3 vec3_int(int i) {
+  float f = (float) i;
+  Vec3 v = {.x=f, .y=f, .z=f};
+  return v;
+}
+
+Vec3 vec3_add(Vec3 v1, Vec3 v2) {
+  Vec3 v = {.x=v1.x + v2.x  
+            .y= v1.y + v2.y
+            .z = v1.z + v2.z};
+  return v;
+}
+
+
+
+
 
 #endif
 
