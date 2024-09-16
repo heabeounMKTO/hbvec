@@ -6,7 +6,7 @@
 
 #if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
 #include <immintrin.h>
-
+#include <emmintrin.h>
 typedef struct  {
   int mmx, sse, sse2,sse3,ssse3,sse41,sse42,sse4a,xop,avx,f16c,fma,avx2,avx512f,avx512bw,avx512cd,avx512dq,avx512vl,avx512vnni,avx512bf16,avx512ifma,avx512vbmi,avx512vbmi2,avx512fp16,avx512er,avx5124fmaps,avx5124vnniw,avxvnni,avxvniint8,avxvnniint16,avxifma,amxfp16,amxbf16,amxint8,amxtile,bmi1,bmi2,gfni,aesni,vaes,sha,rdrand,rdseed,tsx;
 } available_isa;
@@ -14,6 +14,12 @@ typedef struct  {
 typedef struct {
   __m128 data;
 } Vec3;
+
+// 64 bit vector
+typedef struct {
+  __m128d data;
+} Vec3_d;
+
 
 #elif __aarch64__ 
 #include <arm_neon.h>
@@ -45,6 +51,8 @@ typedef struct {
 #endif
 
 
+// f32 ops
+
 void debug_vec();
 void print_available_isa();
 
@@ -66,9 +74,26 @@ float vec3y(Vec3 v);
 float vec3z(Vec3 v);
 
 
-// Vec3 random_in_unit_sphere();
-// Vec3 random_unit_vec3_sphere();
-// Vec3 random_on_hemisphere(Vec3 normal);
+
+
+// f64 ops
+
+Vec3_d vec3d_new(double x, double y, double z);
+void vec3d_print(Vec3_d v);
+Vec3_d vec3d_from_float(double f);
+Vec3_d vec3d_negate(Vec3_d v);
+Vec3_d vec3d_from_int(int i);
+Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2);
+Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2);
+Vec3_d vec3d_mul(Vec3_d v1, Vec3_d v2);
+Vec3_d vec3d_sub(Vec3_d v1, Vec3_d v2);
+Vec3_d vec3d_unit(Vec3_d v);
+
+double vec3d_dot(Vec3_d v1, Vec3_d v2);
+double vec3d_length(Vec3_d v);
+double vec3d_x(Vec3_d v);
+double vec3d_y(Vec3_d v);
+double vec3d_z(Vec3_d v);
 
 
 

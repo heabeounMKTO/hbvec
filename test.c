@@ -19,6 +19,7 @@ float random_float() {
 }
 
 int main() {
+  debug_vec();
   seed_random();
   clock_t start_scalar, end_scalar;
   double scalar_time;
