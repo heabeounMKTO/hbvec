@@ -39,7 +39,7 @@ typedef struct {
 
 typedef struct {
   int default_fallback;
-} avaiavailable_isa;
+} available_isa;
 
 
 #endif
