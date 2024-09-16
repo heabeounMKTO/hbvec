@@ -30,9 +30,16 @@ typedef struct {
   int msa,mmi,sx,asx,msa2,crypto;
 } available_isa;
 
+// default fallback
+#else 
+
 typedef struct {
   float x,y,z;
 } Vec3;
+
+typedef struct {
+  int default_fallback;
+} avaiavailable_isa;
 
 
 #endif

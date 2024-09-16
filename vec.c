@@ -225,6 +225,19 @@ available_isa get_cpu_intrinsics() {
   get_mips_isa.crypto = ruapu_supports("crypto");
   return get_mips_isa;
 }
+
+// Default fallback
+#else 
+available_isa get_cpu_intrinsics() {
+  available_isa def_fallback;
+  def_fallback.def_fallback = 1;
+  return def_fallback;
+}
+
+void print_available_isa() {
+  printf("DEFAULT_FALLBACK: 1");
+}
+
 #endif
 
 
@@ -403,6 +416,18 @@ Vec3 vec3_unit(Vec3 v) {
   float len = vec3_length(v);
   return vec3_div(vec3_from_float(len), v);
 }
+
+#elif __arm__ 
+
+
+
+
+#else 
+Vec3 vec3_new(float x, float y, float z) {
+  Vec3 v = {.x=x, .y=y , .z=z};
+  return v;
+}
+
 
 #endif
 
