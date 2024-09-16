@@ -18,14 +18,19 @@
 
 
 typedef struct {
- cl_int platforms;
-} available_isa;
+ cl_uint platforms_count, device_count;
+ cl_platform_id platform_id;
+  cl_device_id device_id;
+} clDeviceSettings;
 
 typedef struct {
   float x,y,z;
 } Vec3;
 
-available_isa get_opencl_devices();
+clDeviceSettings get_opencl_devices();
+void print_cl_device_settings(clDeviceSettings device_settings);
+cl_context init_opencl_kernel(int device_id, int platform_id);
+
 
 #else
   #if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
