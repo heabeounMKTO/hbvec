@@ -18,14 +18,13 @@ float random_float() {
 }
 
 int main() {
-  debug_vec();
   seed_random();
   clock_t start_scalar, end_scalar;
   double scalar_time;
   clock_t start_sse, end_sse;
   double sse_time;
 
-  debug_vec();
+  // debug_vec();
   Vec3 v = vec3_new(0.312f, 12.03f, 2.03f);
   vec3_print(v);
   Vec3 v2 = vec3_from_float(4.0f);
@@ -49,6 +48,10 @@ int main() {
   sse_time = ((double)(end_sse - start_sse)) / CLOCKS_PER_SEC;
 
   printf("SIMD TIME: %f seconds\n", sse_time);
+  
 
+  Vec3_d vecd = vec3d_new(1.0, 2.0, 3.9);
+  Vec3_d vecd2 = vec3d_new(2.0, 1.4, 0.9);
+  vec3d_print(vec3d_add(vecd, vecd2));
   return 0;
 }

@@ -374,9 +374,8 @@ double vec3d_dot(Vec3_d v1, Vec3_d v2) {
   __m256d mul = _mm256_mul_pd(v1.data, v2.data);
   __m256d sum = _mm256_hadd_pd(mul, mul);
   sum = _mm256_hadd_pd(sum, sum);
-  double result;
-  _mm256_store_pd(&result, sum);
-  return result;
+  return _mm_cvtsd_f64(_mm256_castpd256_pd128(sum));
+
 }
 
 double vec3d_length(Vec3_d v) {
