@@ -15,9 +15,9 @@ typedef struct {
   __m128 data;
 } Vec3;
 
-// 64 bit vector
+// 64 bit vector, avx
 typedef struct {
-  __m128d data;
+  __m256d data;
 } Vec3_d;
 
 
