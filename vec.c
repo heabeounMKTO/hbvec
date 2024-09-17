@@ -369,7 +369,8 @@ Vec3_d vec3d_sub(Vec3_d v1, Vec3_d v2) {
   Vec3_d sub = {.data = _mm256_sub_pd(v1.data, v2.data)};
   return sub;
 }
-
+// using _mm_store_pd causes segfault, 
+// cast to pd128 insyead
 double vec3d_dot(Vec3_d v1, Vec3_d v2) {
   __m256d mul = _mm256_mul_pd(v1.data, v2.data);
   __m256d sum = _mm256_hadd_pd(mul, mul);
