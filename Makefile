@@ -5,6 +5,9 @@ test:
 	mkdir -p build/bin
 	gcc -march=native test.c vec.c -O3 -ffast-math -lm -o build/test && ./build/bin/test
 
+test_scalar:
+	mkdir -p build/bin
+	gcc -DHB_VEC_SCALAR=1 test_scalar.c vec.c -O3 -ffast-math -lm -o build/bin/test && ./build/bin/test
 test_d:
 	mkdir -p build/bin
 	gcc -march=native test_doub.c vec.c -O3 -ffast-math -lm -o build/bin/testdoub && ./build/bin/testdoub

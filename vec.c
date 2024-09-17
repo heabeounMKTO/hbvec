@@ -13,7 +13,20 @@
 available_isa _AVAILABLE_ISA;
 /* get cpu intrinsics for different cpus */
 
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
+
+#if HB_VEC_USE_SCALAR
+
+available_isa get_cpu_intrinsics() {
+  available_isa _default = {.default_fallback=1};
+  return _default;
+}
+
+void print_available_isa() {
+  printf("hbvec not using SIMD instructions (its over)\n");
+  printf("====================\n");
+}
+
+#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
     defined(_M_X64)
 available_isa get_cpu_intrinsics() {
   ruapu_init();
@@ -240,7 +253,149 @@ void debug_vec() {
   print_available_isa();
 }
 
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
+
+/// use scalar operations, 
+/// guaranteed to run on all them platforms
+/// also no SIMD debugging fiasco
+#if HB_VEC_USE_SCALAR
+
+
+// f32 opps
+Vec3 vec3_new(float x, float y, float z) {
+ Vec3 v ={ .x=x, .y=y, .z=z };
+  return v;
+}
+
+void vec3_print(Vec3 v) {
+  printf("x: %f y: %f z: %f", v.x, v.y, v.z);
+}
+
+Vec3 vec3_add(Vec3 v1, Vec3 v2) {
+  Vec3 v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
+  return v;
+}
+
+Vec3 vec3_sub(Vec3 v1, Vec3 v2) {
+  Vec3 v = {.x=v1.x - v2.x , .y=v1.y - v2.y, .z=v1.z - v2.z};
+  return v;
+}
+
+Vec3 vec3_mul(Vec3 v1, Vec3 v2) {
+  Vec3 v = {.x=v1.x * v2.x , .y=v1.y * v2.y, .z=v1.z * v2.z};
+  return v;
+}
+
+Vec3 vec3_div(Vec3 v1, Vec3 v2) {
+    Vec3 result;
+    if (v2.x != 0.0f) {
+        result.x = v1.x / v2.x;
+    } else {
+        result.x = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.y != 0.0f) {
+        result.y = v1.y / v2.y;
+    } else {
+        result.y = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.z != 0.0f) {
+        result.z = v1.z / v2.z;
+    } else {
+        result.z = 0.0f; // Handle division by zero as needed
+    }
+    return result;
+}
+Vec3 vec3_negate(Vec3 v) {
+  Vec3 neg = { -v.x, -v.y, -v.z };
+  return neg;
+}
+
+float vec3_dot(Vec3  v1, Vec3 v1) {
+  return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+
+float vec3_length(Vec3 v) {
+  return sqrt(vec3_dot(v));
+}
+
+Vec3 vec3_unit(Vec3 v) {
+  float len = vec3_length(v);
+  Vec3 vec = {len, len,len};
+  return vec3_div(v, vec);
+}
+
+float vec3x(Vec3 v) { return v.x };
+float vec3y(Vec3 v) { return v.y };
+float vec3z(Vec3 v) {return v.z};
+
+/// f64 opps
+
+Vec3_d vec3d_new(double x, double y, double z) {
+  Vec3_d v = { x ,y ,z };
+  return v;
+}
+
+Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
+  Vec3 v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
+  return v;
+}
+
+Vec3_d vec3_sub(Vec3_d v1, Vec3_d v2) {
+  Vec3_d v = {.x=v1.x - v2.x , .y=v1.y - v2.y, .z=v1.z - v2.z};
+  return v;
+}
+
+Vec3_d vec3_mul(Vec3_d v1, Vec3_d v2) {
+  Vec3_d v = {.x=v1.x * v2.x , .y=v1.y * v2.y, .z=v1.z * v2.z};
+  return v;
+}
+
+Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2) {
+    Vec3_d result;
+    if (v2.x != 0.0f) {
+        result.x = v1.x / v2.x;
+    } else {
+        result.x = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.y != 0.0f) {
+        result.y = v1.y / v2.y;
+    } else {
+        result.y = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.z != 0.0f) {
+        result.z = v1.z / v2.z;
+    } else {
+        result.z = 0.0f; // Handle division by zero as needed
+    }
+    return result;
+}
+Vec3_d vec3d_negate(Vec3_d v) {
+  Vec3 neg = { -v.x, -v.y, -v.z };
+  return neg;
+}
+
+double vec3d_dot(Vec3_d  v1, Vec3_d v1) {
+  return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+
+double vec3d_length(Vec3_d v) {
+  return sqrt(vec3_dot(v));
+}
+
+Vec3_d vec3d_unit(Vec3_d v) {
+  double len = vec3d_length(v);
+  Vec3 vec = {len, len,len};
+  return vec3_div(v, vec);
+}
+
+double vec3d_x(Vec3_d v) { return v.x };
+double vec3d_y(Vec3_d v) { return v.y };
+double vec3d_z(Vec3_d v) {return v.z};
+
+
+
+#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
     defined(_M_X64)
 #include <emmintrin.h> // SSE2 electric boogaloo
 #include <immintrin.h> //AVX
@@ -477,12 +632,13 @@ Vec3 vec3_unit(Vec3 v) {
   return vec3_div(vec3_from_float(len), v);
 }
 
+
+
 #elif __arm__
 
+
+
 #else
-Vec3 vec3_new(float x, float y, float z) {
-  Vec3 v = {.x = x, .y = y, .z = z};
-  return v;
-}
+
 
 #endif

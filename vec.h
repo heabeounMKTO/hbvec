@@ -4,7 +4,28 @@
 #include <stdio.h>
 #include <math.h>
 
-#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+#ifdef HB_VEC_SCALAR
+#define HB_VEC_USE_SCALAR 1
+#else 
+#define HB_VEC_USE_SCALAR 0
+#endif
+
+/// NOT USE SIMD (get that `avx` NONSENSE out of my face kied)
+#if HB_VEC_USE_SCALAR
+
+typedef struct {
+  float x,y,z;
+} Vec3;
+
+typedef struct {
+ double x,y,z;
+} Vec3_d;
+
+typedef struct {
+  int default_fallback;
+} available_isa;
+
+#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
 #include <immintrin.h>
 #include <emmintrin.h>
 typedef struct  {
@@ -19,7 +40,6 @@ typedef struct {
 typedef struct {
   __m256d data;
 } Vec3_d;
-
 
 #elif __aarch64__ 
 #include <arm_neon.h>
@@ -47,15 +67,16 @@ typedef struct {
   int default_fallback;
 } available_isa;
 
-
 #endif
 
 
 // f32 ops
 
 void debug_vec();
-void print_available_isa();
 
+// prints all available CPU's ISA , 
+// mostly in part to ruapu
+void print_available_isa();
 Vec3 vec3_new(float x, float y, float z);
 void vec3_print(Vec3 v);
 Vec3 vec3_from_float(float f);
@@ -74,8 +95,6 @@ float vec3y(Vec3 v);
 float vec3z(Vec3 v);
 
 
-
-
 // f64 ops
 
 Vec3_d vec3d_new(double x, double y, double z);
@@ -88,13 +107,10 @@ Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2);
 Vec3_d vec3d_mul(Vec3_d v1, Vec3_d v2);
 Vec3_d vec3d_sub(Vec3_d v1, Vec3_d v2);
 Vec3_d vec3d_unit(Vec3_d v);
-
 double vec3d_dot(Vec3_d v1, Vec3_d v2);
 double vec3d_length(Vec3_d v);
 double vec3d_x(Vec3_d v);
 double vec3d_y(Vec3_d v);
 double vec3d_z(Vec3_d v);
-
-
 
 #endif
