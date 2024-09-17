@@ -51,6 +51,10 @@ typedef struct {
   float32x4_t data;
 } Vec3;
 
+typedef struct {
+  double x,y,z;
+} Vec3_d;
+
 #elif __arm__ || defined(_M_ARM)
 typedef struct {
   int msa,mmi,sx,asx,msa2,crypto;

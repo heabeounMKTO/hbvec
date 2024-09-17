@@ -394,7 +394,6 @@ double vec3d_y(Vec3_d v) { return v.y };
 double vec3d_z(Vec3_d v) {return v.z};
 
 
-
 #elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
     defined(_M_X64)
 #include <emmintrin.h> // SSE2 electric boogaloo
@@ -471,9 +470,7 @@ Vec3 vec3_unit(Vec3 v) {
 }
 
 float vec3x(Vec3 v) { return v.data[0]; }
-
 float vec3y(Vec3 v) { return v.data[1]; }
-
 float vec3z(Vec3 v) { return v.data[2]; }
 
 /* 64 bit float vector operations */
@@ -545,9 +542,7 @@ Vec3_d vec3d_unit(Vec3_d v) {
 }
 
 double vec3d_x(Vec3_d v) { return v.data[0]; }
-
 double vec3d_y(Vec3_d v) { return v.data[1]; }
-
 double vec3d_z(Vec3_d v) { return v.data[2]; }
 
 #elif __aarch64__
@@ -631,7 +626,6 @@ Vec3 vec3_unit(Vec3 v) {
   float len = vec3_length(v);
   return vec3_div(vec3_from_float(len), v);
 }
-
 
 
 #elif __arm__
