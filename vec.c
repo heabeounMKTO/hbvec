@@ -575,7 +575,6 @@ Vec3 vec3_from_float(float f) {
 }
 
 Vec3 vec3_negate(Vec3 v) {
-
   Vec3 neg = {.data = vmulq_f32(v.data, vdupq_n_f32(-1.0))};
   return neg;
 }
