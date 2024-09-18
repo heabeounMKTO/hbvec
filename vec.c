@@ -354,7 +354,7 @@ Vec3_d vec3d_from_float(double f) {
 }
 
 Vec3_d vec3d_from_int(int i) {
-  Vec3 v = { (double) i, (double) i, (double) i };
+  Vec3_d v = { (double) i, (double) i, (double) i };
   return v;
 }
 
