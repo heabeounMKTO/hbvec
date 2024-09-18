@@ -270,6 +270,16 @@ void vec3_print(Vec3 v) {
   printf("x: %f y: %f z: %f", v.x, v.y, v.z);
 }
 
+Vec3 vec3_from_float(float f) {
+  Vec3 v = { f, f, f };
+  return v;
+}
+
+Vec3 vec3_from_int(int i) {
+  Vec3 v = {(float) i , (float) i, (float) i};
+  return v;
+}
+
 Vec3 vec3_add(Vec3 v1, Vec3 v2) {
   Vec3 v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
   return v;
@@ -335,6 +345,16 @@ Vec3_d vec3d_new(double x, double y, double z) {
 
 Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
+  return v;
+}
+
+Vec3_d vec3d_from_float(double f) {
+  Vec3_d v = { f, f, f };
+  return v;
+}
+
+Vec3_d vec3d_from_int(int i) {
+  Vec3 v = { (double) i, (double) i, (double) i };
   return v;
 }
 
