@@ -343,6 +343,10 @@ Vec3_d vec3d_new(double x, double y, double z) {
   return v;
 }
 
+void vec3d_print(Vec3_d v) {
+  printf("x: %f y: %f z: %f", v.x, v.y, v.z);
+}
+
 Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
   return v;
