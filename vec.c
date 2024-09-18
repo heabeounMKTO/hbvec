@@ -475,10 +475,17 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2) {
 }
 
 float vec3_dot(Vec3 v1, Vec3 v2) {
+  // If sse4.1 is available use `_mm_dp_ps` 
+  // which calculates dot prod with a single instruction
+  #ifdef __SSE4_1__
+    #include <smmintrin.h>
+    return _mm_cvtss_f32(_mm_dp_ps(v1.data, v2.data, 0x71));
+  #else
     __m128 mul = _mm_mul_ps(v1.data, v2.data);
     __m128 sum = _mm_hadd_ps(mul, mul);
     sum = _mm_hadd_ps(sum, sum);
     return _mm_cvtss_f32(sum);
+  #endif
 }
 
 float vec3_length(Vec3 v) {
