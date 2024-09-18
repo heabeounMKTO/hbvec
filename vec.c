@@ -309,13 +309,12 @@ Vec3 vec3_negate(Vec3 v) {
   return neg;
 }
 
-float vec3_dot(Vec3  v1, Vec3 v1) {
+float vec3_dot(Vec3  v1, Vec3 v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
-
 float vec3_length(Vec3 v) {
-  return sqrt(vec3_dot(v));
+  return sqrt(vec3_dot(v,v));
 }
 
 Vec3 vec3_unit(Vec3 v) {
@@ -324,28 +323,27 @@ Vec3 vec3_unit(Vec3 v) {
   return vec3_div(v, vec);
 }
 
-float vec3x(Vec3 v) { return v.x };
-float vec3y(Vec3 v) { return v.y };
-float vec3z(Vec3 v) {return v.z};
+float vec3x(Vec3 v) { return v.x; }
+float vec3y(Vec3 v) { return v.y; }
+float vec3z(Vec3 v) {return v.z;}
 
 /// f64 opps
-
 Vec3_d vec3d_new(double x, double y, double z) {
   Vec3_d v = { x ,y ,z };
   return v;
 }
 
 Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
-  Vec3 v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
+  Vec3_d v = {.x=v1.x + v2.x , .y=v1.y+v2.y, .z=v1.z + v2.z};
   return v;
 }
 
-Vec3_d vec3_sub(Vec3_d v1, Vec3_d v2) {
+Vec3_d vec3d_sub(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {.x=v1.x - v2.x , .y=v1.y - v2.y, .z=v1.z - v2.z};
   return v;
 }
 
-Vec3_d vec3_mul(Vec3_d v1, Vec3_d v2) {
+Vec3_d vec3d_mul(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {.x=v1.x * v2.x , .y=v1.y * v2.y, .z=v1.z * v2.z};
   return v;
 }
@@ -370,28 +368,28 @@ Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2) {
     return result;
 }
 Vec3_d vec3d_negate(Vec3_d v) {
-  Vec3 neg = { -v.x, -v.y, -v.z };
+  Vec3_d neg = { -v.x, -v.y, -v.z };
   return neg;
 }
 
-double vec3d_dot(Vec3_d  v1, Vec3_d v1) {
+double vec3d_dot(Vec3_d  v1, Vec3_d v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
 
 double vec3d_length(Vec3_d v) {
-  return sqrt(vec3_dot(v));
+  return sqrt(vec3d_dot(v, v));
 }
 
 Vec3_d vec3d_unit(Vec3_d v) {
   double len = vec3d_length(v);
-  Vec3 vec = {len, len,len};
-  return vec3_div(v, vec);
+  Vec3_d vec = {len, len,len};
+  return vec3d_div(v, vec);
 }
 
-double vec3d_x(Vec3_d v) { return v.x };
-double vec3d_y(Vec3_d v) { return v.y };
-double vec3d_z(Vec3_d v) {return v.z};
+double vec3d_x(Vec3_d v) { return v.x; }
+double vec3d_y(Vec3_d v) { return v.y; }
+double vec3d_z(Vec3_d v) {return v.z;}
 
 
 #elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
