@@ -13,7 +13,7 @@ test_scalar:
 
 test_simd:
 	mkdir -p build/bin
-	gcc -march=native test_scalar.c vec.c -O3 -ffast-math -lm -g -o build/bin/test_simd && ./build/bin/test_simd
+	gcc -march=native test_simd.c vec.c -O3 -ffast-math -lm -g -o build/bin/test_simd && ./build/bin/test_simd
 
 test_d:
 	mkdir -p build/bin
