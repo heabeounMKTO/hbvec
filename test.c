@@ -48,7 +48,6 @@ int main() {
   sse_time = ((double)(end_sse - start_sse)) / CLOCKS_PER_SEC;
 
   printf("SIMD TIME: %f seconds\n", sse_time);
-  
 
   Vec3_d vecd = vec3d_new(1.0, 2.0, 3.9);
   Vec3_d vecd2 = vec3d_new(2.0, 1.4, 0.9);

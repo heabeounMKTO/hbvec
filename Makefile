@@ -25,7 +25,7 @@ debug:
 
 obj:
 	mkdir -p build/obj 
-	gcc -shared -march=native -o build/obj/libhbvec.so -fPIC vec.c -lm -ffast-math 
+	gcc -shared -DHB_VEC_SHARED -march=native -o build/obj/libhbvec.so -fPIC vec.c -lm -ffast-math 
 
 test_arm:
 	mkdir -p build/bin

@@ -13,11 +13,10 @@
 available_isa _AVAILABLE_ISA;
 /* get cpu intrinsics for different cpus */
 
-
 #if HB_VEC_USE_SCALAR
 
 available_isa get_cpu_intrinsics() {
-  available_isa _default = {.default_fallback=1};
+  available_isa _default = {.default_fallback = 1};
   return _default;
 }
 
@@ -26,7 +25,7 @@ void print_available_isa() {
   printf("====================\n");
 }
 
-#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||            \
+#elif defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||          \
     defined(_M_X64)
 available_isa get_cpu_intrinsics() {
   ruapu_init();
