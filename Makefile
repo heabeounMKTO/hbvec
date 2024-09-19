@@ -9,11 +9,11 @@ test_compare: test_scalar test_simd
 
 test_scalar:
 	mkdir -p build/bin
-	gcc -DHB_VEC_SCALAR=1 test_scalar.c vec.c -O3 -ffast-math -lm -g -o build/bin/test_scalar && ./build/bin/test_scalar
+	gcc -march=native -DHB_VEC_SCALAR=1 test_scalar.c vec.c -O3 -ffast-math -lm -o build/bin/test_scalar && ./build/bin/test_scalar
 
 test_simd:
 	mkdir -p build/bin
-	gcc -march=native test_simd.c vec.c -O3 -ffast-math -lm -g -o build/bin/test_simd && ./build/bin/test_simd
+	gcc -march=native test_simd.c vec.c -O3 -ffast-math -lm  -o build/bin/test_simd && ./build/bin/test_simd
 
 test_d:
 	mkdir -p build/bin

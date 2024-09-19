@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define LOOP_TIMES 10000000
+#define LOOP_TIMES 1000000
+
 void seed_random() { srand((unsigned int)time(NULL)); }
 
 float random_d() {
@@ -20,7 +21,9 @@ int main() {
   
   start_scalar = clock();
   for (int i = 0; i < LOOP_TIMES; i++) {
-    float dot_sc = vec3_length(vec3_new(random_d(), random_d(),random_d()));
+    float dot_sc = vec3d_dot(vec3d_new(random_d(), random_d(),random_d()), 
+                              vec3d_new(random_d(), random_d(),random_d())
+                              );
   }
   end_scalar = clock();
   scalar_time = ((float)(end_scalar - start_scalar)) / CLOCKS_PER_SEC;
