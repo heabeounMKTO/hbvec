@@ -1,12 +1,30 @@
 #include "vec.h"
+#include <math.h>
 #include <stdint.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#define LOOP_TIMES 10000000
+void seed_random() { srand((unsigned int)time(NULL)); }
+
+double random_d() {
+  uint64_t _r = ((uint64_t)rand()) | rand();
+  return (double)_r / ((uint64_t)RAND_MAX | RAND_MAX);
+}
 
 int main() {
-  Vec3 test1 = vec3_new(3.0, 4.0, 40.1);
-  Vec3 unit_vec_scalar1 = vec3_unit(test1);
-  vec3_print(unit_vec_scalar1);
-
-  Vec3_d test = vec3d_new(3.0, 4.0, 40.1);
-  Vec3_d unit_vec_scalar = vec3d_unit(test);
-  vec3d_print(unit_vec_scalar);
+  seed_random();
+  clock_t start_scalar, end_scalar;
+  double scalar_time;
+  
+  start_scalar = clock();
+  for (int i = 0; i < LOOP_TIMES; i++) {
+    double dot_sc = vec3d_dot(vec3d_new(random_d(), random_d(),random_d()), 
+                              vec3d_new(random_d(), random_d(),random_d())
+                              );
+  }
+  end_scalar = clock();
+  scalar_time = ((double)(end_scalar - start_scalar)) / CLOCKS_PER_SEC;
+  printf("SIMD TIME: %f seconds\n", scalar_time);
 }

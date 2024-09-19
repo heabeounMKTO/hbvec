@@ -78,48 +78,6 @@ typedef struct {
 
 void debug_vec();
 
-/* // prints all available CPU's ISA , 
-// mostly in part to ruapu
-void print_available_isa();
-Vec3 vec3_new(float x, float y, float z);
-void vec3_print(Vec3 v);
-Vec3 vec3_from_float(float f);
-Vec3 vec3_negate(Vec3 v);
-Vec3 vec3_from_int(int i);
-Vec3 vec3_add(Vec3 v1, Vec3 v2);
-Vec3 vec3_div(Vec3 v1, Vec3 v2);
-Vec3 vec3_mul(Vec3 v1, Vec3 v2);
-Vec3 vec3_sub(Vec3 v1, Vec3 v2);
-Vec3 vec3_unit(Vec3 v);
-
-float vec3_dot(Vec3 v1, Vec3 v2);
-float vec3_length(Vec3 v);
-float vec3x(Vec3 v);
-float vec3y(Vec3 v);
-float vec3z(Vec3 v);
-
-
-// f64 ops
-
-Vec3_d vec3d_new(double x, double y, double z);
-void vec3d_print(Vec3_d v);
-Vec3_d vec3d_from_float(double f);
-Vec3_d vec3d_negate(Vec3_d v);
-Vec3_d vec3d_from_int(int i);
-Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2);
-Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2);
-Vec3_d vec3d_mul(Vec3_d v1, Vec3_d v2);
-Vec3_d vec3d_sub(Vec3_d v1, Vec3_d v2);
-Vec3_d vec3d_unit(Vec3_d v);
-double vec3d_dot(Vec3_d v1, Vec3_d v2);
-double vec3d_length(Vec3_d v);
-double vec3d_x(Vec3_d v);
-double vec3d_y(Vec3_d v);
-double vec3d_z(Vec3_d v); */
-
-
-
-
 
 
 /// use scalar operations, 
