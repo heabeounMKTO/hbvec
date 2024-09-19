@@ -21,9 +21,7 @@ int main() {
   
   start_scalar = clock();
   for (int i = 0; i < LOOP_TIMES; i++) {
-    double dot_sc = vec3d_dot(vec3d_new(random_d(), random_d(),random_d()), 
-                              vec3d_new(random_d(), random_d(),random_d())
-                              );
+    double dot_sc = vec3_length(vec3_new(random_d(), random_d(),random_d()));
   }
   end_scalar = clock();
   scalar_time = ((double)(end_scalar - start_scalar)) / CLOCKS_PER_SEC;
