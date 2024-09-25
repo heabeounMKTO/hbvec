@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#ifdef USE_LINASM_VEC
-#include <Vector3D.h>
-#endif
-
 typedef struct {
   float x,y,z;
 } Vec3;
@@ -164,24 +160,17 @@ static inline Vec3_d vec3d_div(Vec3_d v1, Vec3_d v2) {
     return result;
 }
 
-static inline Vec3_d vec3d_negate(Vec3_d v) {
-  Vec3_d neg = { -v.x, -v.y, -v.z };
-  return neg;
-}
-#ifndef USE_LINASM_VEC
 static inline double vec3d_dot(Vec3_d  v1, Vec3_d v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
-#else 
-static inline double vec3d_dot(Vec3_d v1, Vec3_d v2) {
-   
-}
-
-#endif
 
 static inline double vec3d_length(Vec3_d v) {
   double dot_v = vec3d_dot(v,v);
   return sqrt(dot_v);
+}
+static inline Vec3_d vec3d_negate(Vec3_d v) {
+  Vec3_d neg = { -v.x, -v.y, -v.z };
+  return neg;
 }
 
 static inline Vec3_d vec3d_scale(Vec3_d v, double t) {
@@ -199,6 +188,7 @@ static inline Vec3_d vec3d_reflect(Vec3_d v, Vec3_d n) {
   return vec3d_sub(v, _a);
 }
 
+
 static inline Vec3_d vec3d_refract(Vec3_d uv, Vec3_d n, double etai_over_etat) {
   double cos_theta = fmin(vec3d_dot(vec3d_negate(uv), n), 1.0);
   Vec3_d r_out_perp = vec3d_scale(vec3d_add(uv, vec3d_scale(n, cos_theta)), etai_over_etat);
@@ -209,9 +199,5 @@ static inline Vec3_d vec3d_refract(Vec3_d uv, Vec3_d n, double etai_over_etat) {
 static inline double vec3d_x(Vec3_d v) { return v.x; }
 static inline double vec3d_y(Vec3_d v) { return v.y; }
 static inline double vec3d_z(Vec3_d v) {return v.z;}
-
-#else
-
-
 
 #endif
