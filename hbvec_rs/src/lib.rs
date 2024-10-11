@@ -1,1 +1,3 @@
-pub mod hbvec;
+mod mafconstants;
+pub mod vec3_d;
+
