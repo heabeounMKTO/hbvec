@@ -1,7 +1,8 @@
 /// f64 vec3 and it's operations
 
 use core::{f64, fmt};
-
+use std::i8;
+use half::f16;
 use crate::mafconstants::{randomf64_range, randomf64};
 
 #[derive(Clone, Copy)]
@@ -18,6 +19,14 @@ impl fmt::Display for Vec3_d {
 }
 
 
+
+impl From<i8> for Vec3_d {
+    fn from(item: i8) -> Vec3_d {
+        let _number = f64::from(item);
+        Vec3_d { x: _number, y: _number, z: _number }
+    }
+}
+
 impl From<i32> for Vec3_d {
     fn from(item: i32) -> Vec3_d {
         let _number = f64::from(item);
@@ -31,6 +40,14 @@ impl From<f32> for Vec3_d {
         Vec3_d { x: _number, y: _number, z: _number }
     }
 }
+
+impl From<f16> for Vec3_d {
+    fn from(item: f16) -> Vec3_d {
+        let _number = f64::from(item);
+        Vec3_d { x: _number, y: _number, z: _number }
+    }
+}
+
 
 impl From<f64> for Vec3_d {
     fn from(item: f64) -> Vec3_d {
