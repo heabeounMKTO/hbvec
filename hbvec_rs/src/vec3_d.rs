@@ -5,7 +5,7 @@ use std::i8;
 use half::f16;
 use crate::mafconstants::{randomf64_range, randomf64};
 
-#[derive(Clone, Copy)]
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct Vec3_d {
     x: f64,
     y: f64,
@@ -17,7 +17,6 @@ impl fmt::Display for Vec3_d {
         write!(f, "x: {}, y: {}, z: {}", self.x, self.y, self.z)
     }
 }
-
 
 
 impl From<i8> for Vec3_d {
@@ -277,5 +276,184 @@ impl Vec3_d{
         v1.y * v2.y +
         v1.z * v2.z
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use approx::assert_relative_eq;
+
+    #[test]
+    fn test_new() {
+        let v = Vec3_d::new(1.0, 2.0, 3.0);
+        assert_eq!(v.x(), 1.0);
+        assert_eq!(v.y(), 2.0);
+        assert_eq!(v.z(), 3.0);
     }
+
+    #[test]
+    fn test_from_conversions() {
+        let v1: Vec3_d = 5i8.into();
+        assert_eq!(v1, Vec3_d::new(5.0, 5.0, 5.0));
+
+        let v2: Vec3_d = 10i32.into();
+        assert_eq!(v2, Vec3_d::new(10.0, 10.0, 10.0));
+
+        let v3: Vec3_d = 15.0f32.into();
+        assert_eq!(v3, Vec3_d::new(15.0, 15.0, 15.0));
+
+        let v4: Vec3_d = f16::from_f32(20.0).into();
+        assert_eq!(v4, Vec3_d::new(20.0, 20.0, 20.0));
+
+        let v5: Vec3_d = 25.0f64.into();
+        assert_eq!(v5, Vec3_d::new(25.0, 25.0, 25.0));
+    }
+
+    #[test]
+    fn test_neg() {
+        let v = Vec3_d::new(1.0, -2.0, 3.0);
+        let negated = -v;
+        assert_eq!(negated, Vec3_d::new(-1.0, 2.0, -3.0));
+    }
+
+    #[test]
+    fn test_add() {
+        let v1 = Vec3_d::new(1.0, 2.0, 3.0);
+        let v2 = Vec3_d::new(4.0, 5.0, 6.0);
+        let sum = v1 + v2;
+        assert_eq!(sum, Vec3_d::new(5.0, 7.0, 9.0));
+    }
+
+    #[test]
+    fn test_sub() {
+        let v1 = Vec3_d::new(4.0, 5.0, 6.0);
+        let v2 = Vec3_d::new(1.0, 2.0, 3.0);
+        let diff = v1 - v2;
+        assert_eq!(diff, Vec3_d::new(3.0, 3.0, 3.0));
+    }
+
+    #[test]
+    fn test_mul() {
+        let v1 = Vec3_d::new(2.0, 3.0, 4.0);
+        let v2 = Vec3_d::new(5.0, 6.0, 7.0);
+        let prod = v1 * v2;
+        assert_eq!(prod, Vec3_d::new(10.0, 18.0, 28.0));
+
+        let scalar_prod = v1 * 2.0;
+        assert_eq!(scalar_prod, Vec3_d::new(4.0, 6.0, 8.0));
+
+        let scalar_prod_reverse = 2.0 * v1;
+        assert_eq!(scalar_prod_reverse, Vec3_d::new(4.0, 6.0, 8.0));
+    }
+
+    #[test]
+    fn test_div() {
+        let v1 = Vec3_d::new(10.0, 15.0, 20.0);
+        let v2 = Vec3_d::new(2.0, 3.0, 4.0);
+        let div = v1 / v2;
+        assert_eq!(div, Vec3_d::new(5.0, 5.0, 5.0));
+
+        let scalar_div = v1 / 2.0;
+        assert_eq!(scalar_div, Vec3_d::new(5.0, 7.5, 10.0));
+    }
+
+    #[test]
+    fn test_compound_assignments() {
+        let mut v = Vec3_d::new(1.0, 2.0, 3.0);
+        v += Vec3_d::new(1.0, 1.0, 1.0);
+        assert_eq!(v, Vec3_d::new(2.0, 3.0, 4.0));
+
+        v -= Vec3_d::new(1.0, 1.0, 1.0);
+        assert_eq!(v, Vec3_d::new(1.0, 2.0, 3.0));
+
+        v *= Vec3_d::new(2.0, 2.0, 2.0);
+        assert_eq!(v, Vec3_d::new(2.0, 4.0, 6.0));
+
+        v /= Vec3_d::new(2.0, 2.0, 2.0);
+        assert_eq!(v, Vec3_d::new(1.0, 2.0, 3.0));
+
+        v += 1.0;
+        assert_eq!(v, Vec3_d::new(2.0, 3.0, 4.0));
+
+        v -= 1.0;
+        assert_eq!(v, Vec3_d::new(1.0, 2.0, 3.0));
+
+        v *= 2.0;
+        assert_eq!(v, Vec3_d::new(2.0, 4.0, 6.0));
+
+        v /= 2.0;
+        assert_eq!(v, Vec3_d::new(1.0, 2.0, 3.0));
+    }
+
+    #[test]
+    fn test_length() {
+        let v = Vec3_d::new(3.0, 4.0, 0.0);
+        assert_relative_eq!(v.length(), 5.0);
+    }
+
+    #[test]
+    fn test_squared_length() {
+        let v = Vec3_d::new(1.0, 2.0, 3.0);
+        assert_eq!(v.squared_length(), 14.0);
+    }
+
+    #[test]
+    fn test_cross() {
+        let v1 = Vec3_d::new(1.0, 2.0, 3.0);
+        let v2 = Vec3_d::new(4.0, 5.0, 6.0);
+        let cross = Vec3_d::cross(v1, v2);
+        assert_eq!(cross, Vec3_d::new(-3.0, 6.0, -3.0));
+    }
+
+    #[test]
+    fn test_dot() {
+        let v1 = Vec3_d::new(1.0, 2.0, 3.0);
+        let v2 = Vec3_d::new(4.0, 5.0, 6.0);
+        let dot = Vec3_d::dot(&v1, &v2);
+        assert_eq!(dot, 32.0);
+    }
+
+    #[test]
+    fn test_make_unit_vector() {
+        let v = Vec3_d::new(3.0, 4.0, 0.0);
+        let unit = Vec3_d::make_unit_vector(v);
+        assert_relative_eq!(unit.length(), 1.0);
+        assert_relative_eq!(unit.x(), 0.6);
+        assert_relative_eq!(unit.y(), 0.8);
+        assert_relative_eq!(unit.z(), 0.0);
+    }
+
+    #[test]
+    fn test_random() {
+        let v = Vec3_d::new(0.0, 0.0, 0.0);
+        let random = v.random();
+        assert!(random.x() >= 0.0 && random.x() <= 1.0);
+        assert!(random.y() >= 0.0 && random.y() <= 1.0);
+        assert!(random.z() >= 0.0 && random.z() <= 1.0);
+    }
+
+    #[test]
+    fn test_random_range() {
+        let random = Vec3_d::random_range(-1.0, 1.0);
+        assert!(random.x() >= -1.0 && random.x() <= 1.0);
+        assert!(random.y() >= -1.0 && random.y() <= 1.0);
+        assert!(random.z() >= -1.0 && random.z() <= 1.0);
+    }
+
+    #[test]
+    fn test_random_in_unit_sphere() {
+        let point = Vec3_d::random_in_unit_sphere();
+        assert!(point.squared_length() < 1.0);
+    }
+
+    #[test]
+    fn test_random_unit_vector() {
+        let unit = Vec3_d::random_unit_vector();
+        assert_relative_eq!(unit.length(), 1.0, epsilon = 1e-6);
+    }
+}
+
+
+
+
 
