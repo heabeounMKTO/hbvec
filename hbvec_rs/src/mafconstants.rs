@@ -24,5 +24,4 @@ pub fn clamp(input: f64, min: f64, max: f64) -> f64 {
     } else {
         input
     }
-    
 }

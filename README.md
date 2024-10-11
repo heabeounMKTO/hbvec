@@ -1,3 +1,3 @@
 # hbvec
-my  vector library cos aint no way im writing it every time, it's a single header file meant to be dropped in any project that needs some simple 3d vector operations. <br>
-it's not the fastest , but it is the simplest ;D
+my vector library , becuase im not writing a new vector library every fukcign time i start a new project. 
+comes in C and Rust packages (thats about all the language we ever need to be honest)
