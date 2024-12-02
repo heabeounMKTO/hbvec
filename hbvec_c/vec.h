@@ -99,6 +99,12 @@ static inline float vec3x(Vec3 v) { return v.x; }
 static inline float vec3y(Vec3 v) { return v.y; }
 static inline float vec3z(Vec3 v) {return v.z;}
 
+
+
+static inline double vec3_cosine_similarity(Vec3 v1 , Vec3 v2) {
+  return vec3_dot(v1, v2) / (vec3_length(v1) * vec3_length(v2));
+}
+
 /// f64 opps
 static inline Vec3_d vec3d_new(double x, double y, double z) {
   Vec3_d v = { x ,y ,z };
