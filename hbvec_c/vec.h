@@ -200,4 +200,10 @@ static inline double vec3d_x(Vec3_d v) { return v.x; }
 static inline double vec3d_y(Vec3_d v) { return v.y; }
 static inline double vec3d_z(Vec3_d v) {return v.z;}
 
+
+static inline double vec3d_cosine_similarity(Vec3_d v1 , Vec3_d v2) {
+  return vec3d_dot(v1, v2) / (vec3d_length(v1) * vec3d_length(v2));
+}
+
+
 #endif
