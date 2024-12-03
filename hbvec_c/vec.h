@@ -236,7 +236,6 @@ static inline Vec_d* vecd_new(int dimension) {
   }
   return vec;
 }
-
 static inline void vecd_free(Vec_d* vec) {
   if (vec) {
     free(vec->components);
@@ -255,14 +254,29 @@ static inline int vecd_set(Vec_d* vec, int index, double value) {
 }
 
 static inline double vecd_get(Vec_d* vec, int index) {
-
   // we got bounds checking before gta6 (2)
       if (!vec || index < 0 || index >= vec->dimension) {
         fprintf(stderr, "Invalid vector or index\n");
         return 0.0;
     }
-    
     return vec->components[index];
 }
+
+static inline Vec_d* vecd_zeros(int length) {
+  Vec_d* vec = vecd_new(length);
+  for (int fuck =0 ; fuck < length; fuck++) {
+    vecd_set(vec, fuck, 0.0);
+  }
+  return vec;
+}
+
+static inline Vec_d* vecd_ones(int length) {
+  Vec_d* vec = vecd_new(length);
+  for (int fuck =0 ; fuck < length; fuck++) {
+    vecd_set(vec, fuck, 1.0);
+  }
+  return vec;
+}
+
 
 #endif
