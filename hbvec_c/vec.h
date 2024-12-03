@@ -293,6 +293,25 @@ static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     return result;
     
 }
+
+static inline Vec_d* vecd_sub(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+        result->components[i] = v1->components[i] - v2->components[i];
+    }
+    
+    return result;
+    
+}
+
+
+
 static inline void vecd_print(const Vec_d* vec) {
     if (!vec) {
         printf("Invalid vector\n");
