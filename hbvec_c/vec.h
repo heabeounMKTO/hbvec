@@ -1,5 +1,6 @@
 #ifndef HB_VEC_H
 #define HB_VEC_H
+#include <cstdlib>
 #include <stdio.h>
 #include <math.h>
 
@@ -10,6 +11,12 @@ typedef struct {
 typedef struct {
  double x,y,z;
 } Vec3_d;
+
+/// we got that N length f64 vec's
+typedef struct {
+  int dimension;
+  double* components;
+} Vec_d;
 
 // f32 opps
 static inline Vec3 vec3_new(float x, float y, float z) {
@@ -211,5 +218,51 @@ static inline double vec3d_cosine_similarity(Vec3_d v1 , Vec3_d v2) {
   return vec3d_dot(v1, v2) / (vec3d_length(v1) * vec3d_length(v2));
 }
 
+
+
+static inline Vec_d* vecd_new(int dimension) {
+  Vec_d* vec = (Vec_d*)malloc(sizeof(Vec_d));
+  if (vec == NULL) {
+    fprintf(stderr, "memalloc failed for Vec_d!\n");
+    return NULL;
+  }
+
+  vec->dimension = dimension;
+  vec->components = (double*)calloc(dimension, sizeof(double));
+  if (vec->components == NULL) {
+    fprintf(stderr, "memalloc failed for Vec_d!\n");
+    free(vec);
+    return NULL;
+  }
+  return vec;
+}
+
+static inline void vecd_free(Vec_d* vec) {
+  if (vec) {
+    free(vec->components);
+    free(vec);
+  }
+}
+// sets shit @ index brah (im sleepy as of writing)
+static inline int vecd_set(Vec_d* vec, int index, double value) {
+  // we got bounds checking before gta6
+  if(!vec || index < 0 || index >=  vec->dimension) {
+    fprintf(stderr, "Invalid ahh index brah\n");
+    return -1;
+  }
+  vec->components[index] = value;
+  return 0;
+}
+
+static inline double vecd_get(Vec_d* vec, int index) {
+
+  // we got bounds checking before gta6 (2)
+      if (!vec || index < 0 || index >= vec->dimension) {
+        fprintf(stderr, "Invalid vector or index\n");
+        return 0.0;
+    }
+    
+    return vec->components[index];
+}
 
 #endif
