@@ -1,6 +1,7 @@
 #ifndef HB_VEC_H
 #define HB_VEC_H
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 typedef struct {
@@ -277,5 +278,32 @@ static inline Vec_d* vecd_ones(int length) {
   return vec;
 }
 
+static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+        result->components[i] = v1->components[i] + v2->components[i];
+    }
+    
+    return result;
+    
+}
+static inline void vecd_print(const Vec_d* vec) {
+    if (!vec) {
+        printf("Invalid vector\n");
+        return;
+    }
+    
+    printf("Vector (Dim %d): [", vec->dimension);
+    for (int i = 0; i < vec->dimension; i++) {
+        printf("%s%.2f", i > 0 ? ", " : "", vec->components[i]);
+    }
+    printf("]\n");
+}
 
 #endif
