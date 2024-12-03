@@ -1,6 +1,5 @@
 #ifndef HB_VEC_H
 #define HB_VEC_H
-#include <cstdlib>
 #include <stdio.h>
 #include <math.h>
 
