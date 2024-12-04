@@ -311,7 +311,6 @@ static inline Vec_d* vecd_sub(const Vec_d* v1 , const Vec_d* v2) {
 }
 
 
-
 static inline Vec_d* vecd_mul(const Vec_d* v1 , const Vec_d* v2) {
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
         fprintf(stderr, "Vectors must have same dimension for multiplication\n");
@@ -344,11 +343,31 @@ static inline Vec_d* vecd_div(const Vec_d* v1 , const Vec_d* v2) {
         result->components[i] = 0.0;
       }
     }
-    
     return result;
     
 }
 
+/// creates a vector from a single float
+static inline Vec_d* vecd_from_float(int dim, double f) {
+  Vec_d* vec = vecd_new(dim);
+  for (int i=0; i<dim; i++) {
+    vec->components[i] = f;
+  }
+  return vec; 
+}
+
+static inline Vec_d* vecd_scale(const Vec_d* v1,  double scale) {
+  if (!v1) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return NULL;
+  }
+  Vec_d* result = vecd_new(v1->dimension);
+  if (!result) return NULL;
+  for (int i = 0; i < v1->dimension; i++) {
+    result->components[i] = v1->components[i] * scale;
+  }
+  return result;
+}
 
 
 static inline void vecd_print(const Vec_d* vec) {
