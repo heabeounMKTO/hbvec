@@ -369,6 +369,30 @@ static inline Vec_d* vecd_scale(const Vec_d* v1,  double scale) {
   return result;
 }
 
+static inline Vec_d* vecd_negate(const Vec_d* v1) {
+  if (!v1) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return NULL;
+  }
+  Vec_d* result = vecd_new(v1->dimension);
+  for (int i = 0; i < v1->dimension; i++) {
+    result->components[i] = v1->components[i] * -1.0;
+  }
+  return result;
+}
+
+static inline int vecd_dot(const Vec_d* v1, const Vec_d* v2, double result) {
+  if (!v1 || !v2 || v1->dimension != v2->dimension) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return -1;
+  }
+  for (int i = 0; i < v1->dimension; i++) {
+    result += (v1->components[i] * v2->components[i]) ;
+  }
+  printf("result %f\n", result);
+  return 0;
+}
+
 
 static inline void vecd_print(const Vec_d* vec) {
     if (!vec) {
