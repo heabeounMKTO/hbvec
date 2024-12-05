@@ -5,7 +5,7 @@
 #include <math.h>
 
 typedef struct {
-  float x,y,z;
+  double x,y,z;
 } Vec3;
 
 typedef struct {
@@ -19,7 +19,7 @@ typedef struct {
 } Vec_d;
 
 // f32 opps
-static inline Vec3 vec3_new(float x, float y, float z) {
+static inline Vec3 vec3_new(double x, float y, float z) {
  Vec3 v ={ .x=x, .y=y, .z=z };
   return v;
 }
@@ -28,17 +28,17 @@ static inline void vec3_print(Vec3 v) {
   printf("x: %f y: %f z: %f", v.x, v.y, v.z);
 }
 
-static inline float vec3_lengthsq( Vec3 v) {
+static inline double vec3_lengthsq( Vec3 v) {
   return (v.x*v.x) + (v.y * v.y) + (v.z * v.z);
 }
 
-static inline Vec3 vec3_from_float(float f) {
+static inline Vec3 vec3_from_double(float f) {
   Vec3 v = { f, f, f };
   return v;
 }
 
 static inline Vec3 vec3_from_int(int i) {
-  Vec3 v = {(float) i , (float) i, (float) i};
+  Vec3 v = {(double) i , (float) i, (float) i};
   return v;
 }
 
@@ -81,7 +81,7 @@ static inline Vec3 vec3_negate(Vec3 v) {
   return neg;
 }
 
-static inline float vec3_dot(Vec3  v1, Vec3 v2) {
+static inline double vec3_dot(Vec3  v1, Vec3 v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
@@ -89,22 +89,22 @@ static inline Vec3 vec3_cross(Vec3 v1, Vec3 v2) {
   return (Vec3) { .x = v1.y * v2.z - v1.z * v2.y, .y=v1.z * v2.x - v1.x * v2.z, .z=v1.x * v2.y - v1.y * v2.x };
 }
 
-static inline float vec3_length(Vec3 v) {
+static inline double vec3_length(Vec3 v) {
   return sqrt(vec3_dot(v,v));
 }
 
 static inline Vec3 vec3_unit(Vec3 v) {
-  float len = vec3_length(v);
+  double len = vec3_length(v);
   Vec3 vec = {len, len,len};
   return vec3_div(v, vec);
 }
 
-static inline Vec3 vec3_scale(Vec3 v, float t) {
+static inline Vec3 vec3_scale(Vec3 v, double t) {
   return (Vec3) { v.x * t, v.y * t, v.z * t };
 }
-static inline float vec3x(Vec3 v) { return v.x; }
-static inline float vec3y(Vec3 v) { return v.y; }
-static inline float vec3z(Vec3 v) {return v.z;}
+static inline double vec3x(Vec3 v) { return v.x; }
+static inline double vec3y(Vec3 v) { return v.y; }
+static inline double vec3z(Vec3 v) {return v.z;}
 
 
 
@@ -130,7 +130,7 @@ static inline Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
   return v;
 }
 
-static inline Vec3_d vec3d_from_float(double f) {
+static inline Vec3_d vec3d_from_double(double f) {
   Vec3_d v = { f, f, f };
   return v;
 }
@@ -197,7 +197,7 @@ static inline Vec3_d vec3d_unit(Vec3_d v) {
 }
 
 static inline Vec3_d vec3d_reflect(Vec3_d v, Vec3_d n) {
-  Vec3_d _a = vec3d_mul(vec3d_mul(vec3d_from_float(2.0), vec3d_from_float(vec3d_dot(v,n))), n);
+  Vec3_d _a = vec3d_mul(vec3d_mul(vec3d_from_double(2.0), vec3d_from_float(vec3d_dot(v,n))), n);
   return vec3d_sub(v, _a);
 }
 
@@ -351,8 +351,8 @@ static inline Vec_d* vecd_div(const Vec_d* v1 , const Vec_d* v2) {
     
 }
 
-/// creates a vector from a single float
-static inline Vec_d* vecd_from_float(int dim, double f) {
+/// creates a vector from a single double
+static inline Vec_d* vecd_from_double(int dim, double f) {
   Vec_d* vec = vecd_new(dim);
   for (int i=0; i<dim; i++) {
     vec->components[i] = f;
@@ -412,7 +412,30 @@ static inline void vecd_print(const Vec_d* vec) {
 }
 
 #else 
+#include <"hbvec.cu">
+#include <cuda_runtime.h>
 
+static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    double *d_a, *d_b, *d_result;
+    
+    cudaMalloc(&d_a, a->size * sizeof(double));
+    cudaMalloc(&d_b, b->size * sizeof(double));
+    cudaMalloc(&d_result, a->size * sizeof(double));
+    cudaMemcpy(d_a, a->data, a->size * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, b->data, b->size * sizeof(double), cudaMemcpyHostToDevice);
+    
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (a->size + threadsPerBlock - 1) / threadsPerBlock;
+    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, a->size);
+    cudaMemcpy(result->data, d_result, a->size * sizeof(float), cudaMemcpyDeviceToHost);
+    return result;
+}
 
 #endif
 

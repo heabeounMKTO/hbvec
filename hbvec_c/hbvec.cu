@@ -17,7 +17,6 @@ __global__ static inline void vectorSubtractKernel(double *a, double *b, double 
     }
 }
 
-
 __global__ void scalarMultiplyKernel(double *vec, double scalar, double *result, int size) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < size) {
