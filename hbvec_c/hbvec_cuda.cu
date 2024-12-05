@@ -1,4 +1,6 @@
 #include <cuda_runtime.h>
+#include <math.h>
+#include <stdio.h>
 
 
 __global__ static inline void vectorAddKernel(double *a, double *b, double *result, int size) {
