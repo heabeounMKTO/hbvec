@@ -270,6 +270,10 @@ static inline Vec_d* vecd_zeros(int length) {
   return vec;
 }
 
+
+
+#ifndef HB_VEC_CUDA
+
 static inline Vec_d* vecd_ones(int length) {
   Vec_d* vec = vecd_new(length);
   for (int fuck =0 ; fuck < length; fuck++) {
@@ -406,5 +410,11 @@ static inline void vecd_print(const Vec_d* vec) {
     }
     printf("]\n");
 }
+
+#else 
+
+
+#endif
+
 
 #endif
