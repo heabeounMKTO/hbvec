@@ -2,4 +2,4 @@ test:
 	gcc test.c -o test
 
 test_cuda:
-	nvcc hbvec.cu test_cuda.c -o test
+	nvcc -DHB_VEC_CUDA=ON hbvec.cu test_cuda.c -o test

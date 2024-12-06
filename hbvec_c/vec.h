@@ -423,6 +423,7 @@ static inline int vecd_dot(const Vec_d* v1, const Vec_d* v2, double result) {
 #include <cuda_runtime.h>
 
 static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
+    printf("running shit on the gpu (an attempt)");
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
         fprintf(stderr, "Vectors must have same dimension for addition\n");
         return NULL;
@@ -435,12 +436,12 @@ static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     cudaMalloc(&d_b, v2->dimension * sizeof(double));
     cudaMalloc(&d_result, v1->dimension * sizeof(double));
     cudaMemcpy(d_a, v1->components, v1->dimension * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, v2->components, v2->dimension sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, v2->components, v2->dimension * sizeof(double), cudaMemcpyHostToDevice);
     
     int threadsPerBlock = 256;
     int blocksPerGrid = (v1->dimension + threadsPerBlock - 1) / threadsPerBlock;
-    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, v1->size);
-    cudaMemcpy(result->components, d_result, a->dimension * sizeof(float), cudaMemcpyDeviceToHost);
+    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, v1->dimension);
+    cudaMemcpy(result->components, d_result, v1->dimension * sizeof(float), cudaMemcpyDeviceToHost);
     return result;
 }
 
