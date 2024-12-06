@@ -195,6 +195,9 @@ static inline Vec3_d vec3d_unit(Vec3_d v) {
   Vec3_d vec = {len, len,len};
   return vec3d_div(v, vec);
 }
+static inline Vec3_d vec3d_from_float(double input) {
+  return (Vec3_d) { .x=input , .y = input, .z = input };
+}
 
 static inline Vec3_d vec3d_reflect(Vec3_d v, Vec3_d n) {
   Vec3_d _a = vec3d_mul(vec3d_mul(vec3d_from_double(2.0), vec3d_from_float(vec3d_dot(v,n))), n);
@@ -272,8 +275,6 @@ static inline Vec_d* vecd_zeros(int length) {
 
 
 
-#ifndef HB_VEC_CUDA
-
 static inline Vec_d* vecd_ones(int length) {
   Vec_d* vec = vecd_new(length);
   for (int fuck =0 ; fuck < length; fuck++) {
@@ -281,6 +282,33 @@ static inline Vec_d* vecd_ones(int length) {
   }
   return vec;
 }
+
+/// creates a vector from a single double
+static inline Vec_d* vecd_from_double(int dim, double f) {
+  Vec_d* vec = vecd_new(dim);
+  for (int i=0; i<dim; i++) {
+    vec->components[i] = f;
+  }
+  return vec; 
+}
+
+static inline void vecd_print(const Vec_d* vec) {
+    if (!vec) {
+        printf("Invalid vector\n");
+        return;
+    }
+    
+    printf("Vector (Dim %d): [", vec->dimension);
+    for (int i = 0; i < vec->dimension; i++) {
+        printf("%s%.2f", i > 0 ? ", " : "", vec->components[i]);
+    }
+    printf("]\n");
+}
+
+
+#ifndef HB_VEC_CUDA
+
+// cpu n dim vector ops 
 
 static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
@@ -351,14 +379,6 @@ static inline Vec_d* vecd_div(const Vec_d* v1 , const Vec_d* v2) {
     
 }
 
-/// creates a vector from a single double
-static inline Vec_d* vecd_from_double(int dim, double f) {
-  Vec_d* vec = vecd_new(dim);
-  for (int i=0; i<dim; i++) {
-    vec->components[i] = f;
-  }
-  return vec; 
-}
 
 static inline Vec_d* vecd_scale(const Vec_d* v1,  double scale) {
   if (!v1) {
@@ -398,21 +418,8 @@ static inline int vecd_dot(const Vec_d* v1, const Vec_d* v2, double result) {
 }
 
 
-static inline void vecd_print(const Vec_d* vec) {
-    if (!vec) {
-        printf("Invalid vector\n");
-        return;
-    }
-    
-    printf("Vector (Dim %d): [", vec->dimension);
-    for (int i = 0; i < vec->dimension; i++) {
-        printf("%s%.2f", i > 0 ? ", " : "", vec->components[i]);
-    }
-    printf("]\n");
-}
-
 #else 
-#include <"hbvec.cu">
+#include "hbvec.cu"
 #include <cuda_runtime.h>
 
 static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
@@ -424,16 +431,16 @@ static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     if (!result) return NULL;
     double *d_a, *d_b, *d_result;
     
-    cudaMalloc(&d_a, a->size * sizeof(double));
-    cudaMalloc(&d_b, b->size * sizeof(double));
-    cudaMalloc(&d_result, a->size * sizeof(double));
-    cudaMemcpy(d_a, a->data, a->size * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, b->data, b->size * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_a, v1->dimension * sizeof(double));
+    cudaMalloc(&d_b, v2->dimension * sizeof(double));
+    cudaMalloc(&d_result, v1->dimension * sizeof(double));
+    cudaMemcpy(d_a, v1->components, v1->dimension * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, v2->components, v2->dimension sizeof(double), cudaMemcpyHostToDevice);
     
     int threadsPerBlock = 256;
-    int blocksPerGrid = (a->size + threadsPerBlock - 1) / threadsPerBlock;
-    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, a->size);
-    cudaMemcpy(result->data, d_result, a->size * sizeof(float), cudaMemcpyDeviceToHost);
+    int blocksPerGrid = (v1->dimension + threadsPerBlock - 1) / threadsPerBlock;
+    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, v1->size);
+    cudaMemcpy(result->components, d_result, a->dimension * sizeof(float), cudaMemcpyDeviceToHost);
     return result;
 }
 
