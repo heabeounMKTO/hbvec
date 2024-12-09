@@ -404,25 +404,26 @@ static inline Vec_d* vecd_negate(const Vec_d* v1) {
   return result;
 }
 
-static inline double vecd_dot(const Vec_d* v1, const Vec_d* v2, double result) {
+static inline double vecd_dot(const Vec_d* v1, const Vec_d* v2) {
   if (!v1 || !v2 || v1->dimension != v2->dimension) {
     fprintf(stderr, "invalid vector to scale!\n");
     return -1;
   }
+  double result;
   for (int i = 0; i < v1->dimension; i++) {
-    result += (v1->components[i] * v2->components[i]) ;
+    result += (double) (v1->components[i] * v2->components[i]);
   }
   return result;
 }
 
-static inline double vecd_length(const Vec_d* v, double result) {
-  sqrt(vecd_dot(v,v, result)); 
+static inline double vecd_length(const Vec_d* v) {
+  double result = sqrt(vecd_dot(v,v)); 
   return result;
 }
 
 static inline Vec_d* vecd_unit(Vec_d* v) {
   double len_res;
-  double len = vecd_length(v, len_res);
+  double len = vecd_length(v);
   Vec_d*  result = vecd_new(v->dimension); 
   for (int i = 0; i < v->dimension; i++) {
     result->components[i] = 1.0 / v->components[i];
