@@ -1,18 +1,26 @@
 #ifndef HB_VEC_H
 #define HB_VEC_H
 #include <stdio.h>
+#include "rand.h"
+#include <stdlib.h>
 #include <math.h>
 
 typedef struct {
-  float x,y,z;
+  double x,y,z;
 } Vec3;
 
 typedef struct {
  double x,y,z;
 } Vec3_d;
 
+/// we got that N length f64 vec's
+typedef struct {
+  int dimension;
+  double* components;
+} Vec_d;
+
 // f32 opps
-static inline Vec3 vec3_new(float x, float y, float z) {
+static inline Vec3 vec3_new(double x, float y, float z) {
  Vec3 v ={ .x=x, .y=y, .z=z };
   return v;
 }
@@ -21,17 +29,17 @@ static inline void vec3_print(Vec3 v) {
   printf("x: %f y: %f z: %f", v.x, v.y, v.z);
 }
 
-static inline float vec3_lengthsq( Vec3 v) {
+static inline double vec3_lengthsq( Vec3 v) {
   return (v.x*v.x) + (v.y * v.y) + (v.z * v.z);
 }
 
-static inline Vec3 vec3_from_float(float f) {
+static inline Vec3 vec3_from_double(float f) {
   Vec3 v = { f, f, f };
   return v;
 }
 
 static inline Vec3 vec3_from_int(int i) {
-  Vec3 v = {(float) i , (float) i, (float) i};
+  Vec3 v = {(double) i , (float) i, (float) i};
   return v;
 }
 
@@ -74,7 +82,7 @@ static inline Vec3 vec3_negate(Vec3 v) {
   return neg;
 }
 
-static inline float vec3_dot(Vec3  v1, Vec3 v2) {
+static inline double vec3_dot(Vec3  v1, Vec3 v2) {
   return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
@@ -82,22 +90,28 @@ static inline Vec3 vec3_cross(Vec3 v1, Vec3 v2) {
   return (Vec3) { .x = v1.y * v2.z - v1.z * v2.y, .y=v1.z * v2.x - v1.x * v2.z, .z=v1.x * v2.y - v1.y * v2.x };
 }
 
-static inline float vec3_length(Vec3 v) {
+static inline double vec3_length(Vec3 v) {
   return sqrt(vec3_dot(v,v));
 }
 
 static inline Vec3 vec3_unit(Vec3 v) {
-  float len = vec3_length(v);
+  double len = vec3_length(v);
   Vec3 vec = {len, len,len};
   return vec3_div(v, vec);
 }
 
-static inline Vec3 vec3_scale(Vec3 v, float t) {
+static inline Vec3 vec3_scale(Vec3 v, double t) {
   return (Vec3) { v.x * t, v.y * t, v.z * t };
 }
-static inline float vec3x(Vec3 v) { return v.x; }
-static inline float vec3y(Vec3 v) { return v.y; }
-static inline float vec3z(Vec3 v) {return v.z;}
+static inline double vec3x(Vec3 v) { return v.x; }
+static inline double vec3y(Vec3 v) { return v.y; }
+static inline double vec3z(Vec3 v) {return v.z;}
+
+
+
+static inline double vec3_cosine_similarity(Vec3 v1 , Vec3 v2) {
+  return vec3_dot(v1, v2) / (vec3_length(v1) * vec3_length(v2));
+}
 
 /// f64 opps
 static inline Vec3_d vec3d_new(double x, double y, double z) {
@@ -117,7 +131,7 @@ static inline Vec3_d vec3d_add(Vec3_d v1, Vec3_d v2) {
   return v;
 }
 
-static inline Vec3_d vec3d_from_float(double f) {
+static inline Vec3_d vec3d_from_double(double f) {
   Vec3_d v = { f, f, f };
   return v;
 }
@@ -182,9 +196,12 @@ static inline Vec3_d vec3d_unit(Vec3_d v) {
   Vec3_d vec = {len, len,len};
   return vec3d_div(v, vec);
 }
+static inline Vec3_d vec3d_from_float(double input) {
+  return (Vec3_d) { .x=input , .y = input, .z = input };
+}
 
 static inline Vec3_d vec3d_reflect(Vec3_d v, Vec3_d n) {
-  Vec3_d _a = vec3d_mul(vec3d_mul(vec3d_from_float(2.0), vec3d_from_float(vec3d_dot(v,n))), n);
+  Vec3_d _a = vec3d_mul(vec3d_mul(vec3d_from_double(2.0), vec3d_from_float(vec3d_dot(v,n))), n);
   return vec3d_sub(v, _a);
 }
 
@@ -199,5 +216,271 @@ static inline Vec3_d vec3d_refract(Vec3_d uv, Vec3_d n, double etai_over_etat) {
 static inline double vec3d_x(Vec3_d v) { return v.x; }
 static inline double vec3d_y(Vec3_d v) { return v.y; }
 static inline double vec3d_z(Vec3_d v) {return v.z;}
+
+
+static inline double vec3d_cosine_similarity(Vec3_d v1 , Vec3_d v2) {
+  return vec3d_dot(v1, v2) / (vec3d_length(v1) * vec3d_length(v2));
+}
+
+
+
+static inline Vec_d* vecd_new(int dimension) {
+  Vec_d* vec = (Vec_d*)malloc(sizeof(Vec_d));
+  if (vec == NULL) {
+    fprintf(stderr, "memalloc failed for Vec_d!\n");
+    return NULL;
+  }
+
+  vec->dimension = dimension;
+  vec->components = (double*)calloc(dimension, sizeof(double));
+  if (vec->components == NULL) {
+    fprintf(stderr, "memalloc failed for Vec_d!\n");
+    free(vec);
+    return NULL;
+  }
+  return vec;
+}
+static inline void vecd_free(Vec_d* vec) {
+  if (vec) {
+    free(vec->components);
+    free(vec);
+  }
+}
+// sets shit @ index brah (im sleepy as of writing)
+static inline int vecd_set(Vec_d* vec, int index, double value) {
+  // we got bounds checking before gta6
+  if(!vec || index < 0 || index >=  vec->dimension) {
+    fprintf(stderr, "Invalid ahh index brah\n");
+    return -1;
+  }
+  vec->components[index] = value;
+  return 0;
+}
+
+static inline double vecd_get(Vec_d* vec, int index) {
+  // we got bounds checking before gta6 (2)
+      if (!vec || index < 0 || index >= vec->dimension) {
+        fprintf(stderr, "Invalid vector or index\n");
+        return 0.0;
+    }
+    return vec->components[index];
+}
+
+static inline Vec_d* vecd_zeros(int length) {
+  Vec_d* vec = vecd_new(length);
+  for (int fuck =0 ; fuck < length; fuck++) {
+    vecd_set(vec, fuck, 0.0);
+  }
+  return vec;
+}
+
+
+
+static inline Vec_d* vecd_ones(int length) {
+  Vec_d* vec = vecd_new(length);
+  for (int fuck =0 ; fuck < length; fuck++) {
+    vecd_set(vec, fuck, 1.0);
+  }
+  return vec;
+}
+
+/// creates a vector from a single double
+static inline Vec_d* vecd_from_double(int dim, double f) {
+  Vec_d* vec = vecd_new(dim);
+  for (int i=0; i<dim; i++) {
+    vec->components[i] = f;
+  }
+  return vec; 
+}
+
+static inline void vecd_print(const Vec_d* vec) {
+    if (!vec) {
+        printf("Invalid vector\n");
+        return;
+    }
+    
+    printf("Vector (Dim %d): [", vec->dimension);
+    for (int i = 0; i < vec->dimension; i++) {
+        printf("%s%.2f", i > 0 ? ", " : "", vec->components[i]);
+    }
+    printf("]\n");
+}
+
+
+#ifndef HB_VEC_CUDA
+
+// cpu n dim vector ops 
+
+static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+        result->components[i] = v1->components[i] + v2->components[i];
+    }
+    return result;
+}
+
+static inline Vec_d* vecd_sub(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+        result->components[i] = v1->components[i] - v2->components[i];
+    }
+    
+    return result;
+    
+}
+
+
+static inline Vec_d* vecd_mul(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for multiplication\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+        result->components[i] = v1->components[i] * v2->components[i];
+    }
+    
+    return result;
+    
+}
+
+static inline Vec_d* vecd_div(const Vec_d* v1 , const Vec_d* v2) {
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for multiplication\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    
+    for (int i = 0; i < v1->dimension; i++) {
+      if (v2->components[i] != 0.0) {
+
+          result->components[i] = v1->components[i] / v2->components[i];
+      } else {
+        result->components[i] = 0.0;
+      }
+    }
+    return result;
+    
+}
+
+
+static inline Vec_d* vecd_scale(const Vec_d* v1,  double scale) {
+  if (!v1) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return NULL;
+  }
+  Vec_d* result = vecd_new(v1->dimension);
+  if (!result) return NULL;
+  for (int i = 0; i < v1->dimension; i++) {
+    result->components[i] = v1->components[i] * scale;
+  }
+  return result;
+}
+
+static inline Vec_d* vecd_negate(const Vec_d* v1) {
+  if (!v1) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return NULL;
+  }
+  Vec_d* result = vecd_new(v1->dimension);
+  for (int i = 0; i < v1->dimension; i++) {
+    result->components[i] = v1->components[i] * -1.0;
+  }
+  return result;
+}
+
+static inline double vecd_dot(const Vec_d* v1, const Vec_d* v2) {
+  if (!v1 || !v2 || v1->dimension != v2->dimension) {
+    fprintf(stderr, "invalid vector to scale!\n");
+    return -1;
+  }
+  double result;
+  for (int i = 0; i < v1->dimension; i++) {
+    result += (double) (v1->components[i] * v2->components[i]);
+  }
+  return result;
+}
+
+static inline double vecd_length(const Vec_d* v) {
+  double result = sqrt(vecd_dot(v,v)); 
+  return result;
+}
+
+static inline Vec_d* vecd_unit(Vec_d* v) {
+  double len_res;
+  double len = vecd_length(v);
+  Vec_d*  result = vecd_new(v->dimension); 
+  for (int i = 0; i < v->dimension; i++) {
+    result->components[i] = 1.0 / v->components[i];
+  }
+  return result;
+}
+
+static inline Vec_d* vecd_random(int vec_length) {
+  mt19937_state state;
+  manual_seed(&state, 12348);
+  Vec_d* result = vecd_new(vec_length);
+  for (int i =0; i<result->dimension; i++) {
+    result->components[i] = (double) randint32(&state);
+  }
+  return result;
+} 
+
+static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for multiplication\n");
+        return NULL;
+    }
+    double result; 
+    result = vecd_dot(v1,v2) / (vecd_length(v1) * vecd_length(v2));
+    return result;
+
+}
+
+
+#else 
+#include "hbvec.cu"
+#include <cuda_runtime.h>
+
+static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
+    printf("running shit on the gpu (an attempt)");
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for addition\n");
+        return NULL;
+    }
+    Vec_d* result = vecd_new(v1->dimension);
+    if (!result) return NULL;
+    double *d_a, *d_b, *d_result;
+    
+    cudaMalloc(&d_a, v1->dimension * sizeof(double));
+    cudaMalloc(&d_b, v2->dimension * sizeof(double));
+    cudaMalloc(&d_result, v1->dimension * sizeof(double));
+    cudaMemcpy(d_a, v1->components, v1->dimension * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, v2->components, v2->dimension * sizeof(double), cudaMemcpyHostToDevice);
+    
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (v1->dimension + threadsPerBlock - 1) / threadsPerBlock;
+    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, v1->dimension);
+    cudaMemcpy(result->components, d_result, v1->dimension * sizeof(float), cudaMemcpyDeviceToHost);
+    return result;
+}
+
+#endif
+
 
 #endif
