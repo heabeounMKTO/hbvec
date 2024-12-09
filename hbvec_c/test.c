@@ -5,12 +5,15 @@
 
 
 int main() {
-  Vec_d* v1 = vecd_ones(10000);
-  Vec_d* v2 = vecd_ones(10000);
-  Vec_d* v3 = vecd_add(v1, v2);
-  Vec_d* scale_1 = vecd_scale(v3, 4.3);
-  double dot_prod;
-  vecd_dot(v1, scale_1, dot_prod);
-  // vecd_print(dot);
-  printf("dot prod %f", dot_prod);
+  Vec_d* v1 = vecd_random(10000);
+  Vec_d* v2 = vecd_random(10000);
+  // Vec_d* unit_vec = vecd_unit(v1);
+  Vec_d* _v = vecd_add(v1, v2);
+  double lenght; 
+  // vecd_length(v1, lenght);
+  // vecd_dot(v1, v2 , lenght);
+  Vec_d* add_ = vecd_add(v1, v2);
+  vecd_dot(add_, v1, lenght);
+  // vecd_print(add_);
+  printf("length %f\n", lenght);
 }

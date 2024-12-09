@@ -101,7 +101,7 @@ static inline float randfloat32(mt19937_state* state) {
     return (randint32(state) & ((1ull << 24) - 1)) * (1.0f / (1ull << 24));
 }
 
-inline double randfloat64(mt19937_state* state) {
+static inline double randfloat64(mt19937_state* state) {
     return (randint64(state) & ((1ull << 53) - 1)) * (1.0 / (1ull << 53));
 }
 
