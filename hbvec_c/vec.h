@@ -223,14 +223,12 @@ static inline double vec3d_cosine_similarity(Vec3_d v1 , Vec3_d v2) {
 }
 
 
-
 static inline Vec_d* vecd_new(int dimension) {
   Vec_d* vec = (Vec_d*)malloc(sizeof(Vec_d));
   if (vec == NULL) {
     fprintf(stderr, "memalloc failed for Vec_d!\n");
     return NULL;
   }
-
   vec->dimension = dimension;
   vec->components = (double*)calloc(dimension, sizeof(double));
   if (vec->components == NULL) {
@@ -240,6 +238,7 @@ static inline Vec_d* vecd_new(int dimension) {
   }
   return vec;
 }
+
 static inline void vecd_free(Vec_d* vec) {
   if (vec) {
     free(vec->components);
@@ -274,8 +273,6 @@ static inline Vec_d* vecd_zeros(int dim) {
   return vec;
 }
 
-
-
 static inline Vec_d* vecd_ones(int dim) {
   Vec_d* vec = vecd_new(dim);
   for (int i=0; i<dim; i++) {
@@ -305,11 +302,6 @@ static inline void vecd_print(const Vec_d* vec) {
     }
     printf("]\n");
 }
-
-
-#ifndef HB_VEC_CUDA
-
-// cpu n dim vector ops 
 
 static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
@@ -431,15 +423,6 @@ static inline Vec_d* vecd_unit(Vec_d* v) {
   return result;
 }
 
-static inline Vec_d* vecd_random(int vec_length) {
-  mt19937_state state;
-  manual_seed(&state, 12348);
-  Vec_d* result = vecd_new(vec_length);
-  for (int i =0; i<result->dimension; i++) {
-    result->components[i] = (double) randint32(&state);
-  }
-  return result;
-} 
 
 static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
@@ -450,35 +433,13 @@ static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
   return result;
 }
 
-
-#else 
-#include "hbvec.cu"
-#include <cuda_runtime.h>
-
-static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
-    printf("running shit on the gpu (an attempt)");
-    if (!v1 || !v2 || v1->dimension != v2->dimension) {
-        fprintf(stderr, "Vectors must have same dimension for addition\n");
-        return NULL;
-    }
-    Vec_d* result = vecd_new(v1->dimension);
-    if (!result) return NULL;
-    double *d_a, *d_b, *d_result;
-    
-    cudaMalloc(&d_a, v1->dimension * sizeof(double));
-    cudaMalloc(&d_b, v2->dimension * sizeof(double));
-    cudaMalloc(&d_result, v1->dimension * sizeof(double));
-    cudaMemcpy(d_a, v1->components, v1->dimension * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, v2->components, v2->dimension * sizeof(double), cudaMemcpyHostToDevice);
-    
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (v1->dimension + threadsPerBlock - 1) / threadsPerBlock;
-    vectorAddKernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_result, v1->dimension);
-    cudaMemcpy(result->components, d_result, v1->dimension * sizeof(float), cudaMemcpyDeviceToHost);
-    return result;
-}
-
-#endif
-
+static inline Vec_d* vecd_random(int vec_length, mt19937_state state) {
+  // mt19937_state state;
+  Vec_d* result = vecd_new(vec_length);
+  for (int i =0; i<result->dimension; i++) {
+    result->components[i] = (double) randint32(&state);
+  }
+  return result;
+} 
 
 #endif
