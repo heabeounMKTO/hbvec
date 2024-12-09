@@ -441,13 +441,12 @@ static inline Vec_d* vecd_random(int vec_length) {
   return result;
 } 
 
-static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2, double result){
+static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
         fprintf(stderr, "Vectors must have same dimension for multiplication\n");
         return -1;
     }
-  result =  vecd_dot(v1,v2) /  (vecd_length(v1) * vecd_length(v2));
-  printf("RESULT %f", result);
+  double result =  vecd_dot(v1,v2) /  (vecd_length(v1) * vecd_length(v2));
   return result;
 }
 

@@ -14,7 +14,8 @@ int main() {
     printf("dot %f\n", dot);
     printf("v1_l %f\n", len1);
     printf("v2_l %f\n", len2);
-    printf("cosine_sim %f\n", (dot / (len1 * len2)));
+  double cosine_sim = vecd_cosine_similarity(v1, v2);
+    printf("cosine_sim %f\n", cosine_sim);
     // vecd_print(v1);
     // vecd_print(v2);
 
