@@ -1,0 +1,102 @@
+#include <cuda_runtime.h>
+#include <stdio.h>
+
+typedef struct {
+    double x, y, z;
+} Vec3_d;
+
+// Create a new Vec3_d
+__device__ __host__ Vec3_d vec3d_new(double x, double y, double z) {
+    Vec3_d v = {x, y, z};
+    return v;
+}
+
+// Add two Vec3_d
+__device__ Vec3_d vec3d_add_device(Vec3_d v1, Vec3_d v2) {
+    Vec3_d v = {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
+    return v;
+}
+
+__device__ Vec3_d vec3d_from_float_device(double f) {
+  Vec3_d v = { f, f, f };
+  return v;
+}
+
+
+__device__ Vec3_d vec3d_mul_device(Vec3_d v1, Vec3_d v2) {
+  Vec3_d v = {.x=v1.x * v2.x , .y=v1.y * v2.y, .z=v1.z * v2.z};
+  return v;
+}
+
+
+__device__ Vec3_d vec3d_div_device(Vec3_d v1, Vec3_d v2) {
+    Vec3_d result;
+    if (v2.x != 0.0f) {
+        result.x = v1.x / v2.x;
+    } else {
+        result.x = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.y != 0.0f) {
+        result.y = v1.y / v2.y;
+    } else {
+        result.y = 0.0f; // Handle division by zero as needed
+    }
+    if (v2.z != 0.0f) {
+        result.z = v1.z / v2.z;
+    } else {
+        result.z = 0.0f; // Handle division by zero as needed
+    }
+    return result;
+}
+
+__device__ double vec3d_lengthsq_device( Vec3_d v) {
+  return (v.x*v.x) + (v.y * v.y) + (v.z * v.z);
+}
+
+__device__ Vec3_d vec3d_sub_device(Vec3_d v1, Vec3_d v2) {
+  Vec3_d v = {.x=v1.x - v2.x , .y=v1.y - v2.y, .z=v1.z - v2.z};
+  return v;
+}
+
+__device__  Vec3_d vec3d_scale_device(Vec3_d v, double t) {
+  return (Vec3_d) { v.x * t, v.y * t, v.z * t };
+}
+
+__device__ double vec3d_dot_device(Vec3_d  v1, Vec3_d v2) {
+  return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+__device__ double vec3d_length_device(Vec3_d v) {
+  double dot_v = vec3d_dot_device(v,v);
+  return sqrt(dot_v);
+}
+
+__device__ Vec3_d vec3d_unit_device(Vec3_d v) {
+  double len = vec3d_length_device(v);
+  Vec3_d vec = {len, len,len};
+  return vec3d_div_device(v, vec);
+}
+
+
+
+// Kernel for adding arrays of Vec3_d
+__global__ void vec3d_add_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_add_device(v1[idx], v2[idx]);
+    }
+}
+
+__global__ void vec3d_sub_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_sub_device(v1[idx], v2[idx]);
+    }
+}
+
+void vec3d_add(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+  size_t size = batch_size * sizeof(Vec3_d);
+  Vec3_d *h_v1 = (Vec3_d *)malloc(size);
+  Vec3_d *h_v2 = (Vec3_d *)malloc(size);
+  Vec3_d *h_result = (Vec3_d *)malloc(size);
+} 
