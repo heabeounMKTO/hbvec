@@ -9,5 +9,5 @@ hbvec_gpu:
 	ar rcs libs/libhbvecgpu.a libs/vecgpu.o
 
 test_cuda: hbvec_gpu
-	gcc -DHBVEC_USE_CUDA=ON test_cuda.c -L libs/ -lhbvecgpu -lcudart -lm -o test_cuda
+	gcc -DHBVEC_USE_CUDA test_cuda.c -L libs/ -lhbvecgpu -lcudart -lm -o test_cuda
 	./test_cuda

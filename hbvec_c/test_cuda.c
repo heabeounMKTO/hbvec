@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include "vec.h"
-#ifdef HBVEC_USE_CUDA
+
 #include "vec_gpu.h"
-#endif
 
 int main() {
   Vec3_d* v1 = (Vec3_d *) malloc(1000 * sizeof(Vec3_d));
@@ -12,7 +11,5 @@ int main() {
     v1[i] = vec3d_from_int(i);
     v2[i] = vec3d_from_int(i+2);
   }
-  #ifdef HBVEC_USE_CUDA
   vec3d_add_gpu(v1, v2, result, 1000); 
-  #endif
 }
