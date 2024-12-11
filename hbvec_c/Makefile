@@ -1,5 +1,12 @@
 test_scalar:
 	gcc test.c -o test -lm
 
-test_cuda:
-	nvcc -DHB_VEC_CUDA=ON hbvec.cu test_cuda.c -o test
+
+
+hbvec_gpu:
+	mkdir -p libs
+	nvcc -c vec_gpu.cu -o libs/vecgpu.o
+	ar rcs libs/libhbvecgpu.a libs/vecgpu.o
+
+test_cuda: hbvec_gpu
+	gcc test_cuda.c -L libs/ -lhbvecgpu -lcudart -lm -o test_cuda

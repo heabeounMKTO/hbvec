@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include "vec_gpu.h"
 #include "vec.h"
-
-
 int main() {
-  Vec_d* v1 = vecd_ones(1000000);
-  Vec_d* v2 = vecd_ones(1000000);
-  Vec_d* v3 = vecd_add(v1, v2);
-  vecd_print(v3);
+  Vec3_d* v1 = (Vec3_d *) malloc(1000 * sizeof(Vec3_d));
+  Vec3_d* v2 = (Vec3_d *) malloc(1000 * sizeof(Vec3_d));
+  for (int i = 0; i  < 1000; i++) {
+    v1[i] = vec3d_from_int(i);
+    v2[i] = vec3d_from_int(i+2);
+  }
+  vec3d_print(*v1);
 }

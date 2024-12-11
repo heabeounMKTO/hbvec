@@ -95,8 +95,25 @@ __global__ void vec3d_sub_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) 
 }
 
 void vec3d_add(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
-  size_t size = batch_size * sizeof(Vec3_d);
-  Vec3_d *h_v1 = (Vec3_d *)malloc(size);
-  Vec3_d *h_v2 = (Vec3_d *)malloc(size);
-  Vec3_d *h_result = (Vec3_d *)malloc(size);
+  size_t vec_memsize = batch_size * sizeof(Vec3_d);
+  Vec3_d *d_a, *d_b, *d_c;
+      if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_b, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_c, vec_memsize) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory allocation failed\n");
+    }
+    if (cudaMemcpy(d_a, v1, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess ||
+        cudaMemcpy(d_b, v2, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to device failed\n");
+    }
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (batch_size + threadsPerBlock - 1) / threadsPerBlock;
+    vec3d_add_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
+    cudaError_t kernelError = cudaGetLastError();
+    if (kernelError != cudaSuccess) {
+        fprintf(stderr, "Kernel launch error: %s\n", cudaGetErrorString(kernelError));
+    }
+    if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to host failed\n");
+    }
 } 
