@@ -78,7 +78,6 @@ __device__ Vec3_d vec3d_unit_device(Vec3_d v) {
 }
 
 
-
 // Kernel for adding arrays of Vec3_d
 __global__ void vec3d_add_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -94,7 +93,7 @@ __global__ void vec3d_sub_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) 
     }
 }
 
-void vec3d_add(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+void vec3d_add_gpu(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
   size_t vec_memsize = batch_size * sizeof(Vec3_d);
   Vec3_d *d_a, *d_b, *d_c;
       if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
