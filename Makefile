@@ -50,5 +50,5 @@ cudavec:
 
 test_gpu: cudavec 
 	mkdir -p build
-	gcc test_cuda.c -L./libs -lhbvec_gpu -lcudart -o build/test_gpu -lm 
+	gcc -DHBVEC_USE_CUDA=ON test_cuda.c -L./libs -lhbvec_gpu -lcudart -o build/test_gpu -lm 
 	./build/test_gpu
