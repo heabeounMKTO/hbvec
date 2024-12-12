@@ -303,6 +303,10 @@ static inline void vecd_print(const Vec_d* vec) {
     printf("]\n");
 }
 
+
+
+// cpu n dim vector ops 
+
 static inline Vec_d* vecd_add(const Vec_d* v1 , const Vec_d* v2) {
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
         fprintf(stderr, "Vectors must have same dimension for addition\n");
