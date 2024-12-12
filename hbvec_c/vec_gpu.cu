@@ -64,6 +64,9 @@ __device__ double vec3d_length_device(Vec3_d v) {
   return sqrt(dot_v);
 }
 
+__device__ Vec3_d vec3d_cross_device(Vec3_d v1, Vec3_d v2) {
+  return (Vec3_d) { .x = v1.y * v2.z - v1.z * v2.y, .y=v1.z * v2.x - v1.x * v2.z, .z=v1.x * v2.y - v1.y * v2.x };
+}
 __device__ Vec3_d vec3d_unit_device(Vec3_d v) {
   double len = vec3d_length_device(v);
   Vec3_d vec = {len, len,len};
@@ -100,7 +103,19 @@ __global__ void vec3d_div_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) 
     }
 }
 
+__global__ void vec3d_dot_kernel(Vec3_d *v1, Vec3_d *v2, double *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_dot_device(v1[idx], v2[idx]);
+    }
+}
 
+__global__ void vec3d_cross_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_cross_device(v1[idx], v2[idx]);
+    }
+}
 void vec3d_add_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
   size_t vec_memsize = batch_size * sizeof(Vec3_d);
   Vec3_d *d_a, *d_b, *d_c;
@@ -155,12 +170,14 @@ void vec3d_sub_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
   cudaFree(d_c);
 } 
 
-void vec3d_dot_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+void vec3d_dot_cuda(Vec3_d *v1, Vec3_d *v2, double *result, int batch_size) {
   size_t vec_memsize = batch_size * sizeof(Vec3_d);
-  Vec3_d *d_a, *d_b, *d_c;
+  size_t double_memsize = batch_size * sizeof(double);
+  Vec3_d *d_a, *d_b;
+  double *d_c;
       if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
         cudaMalloc(&d_b, vec_memsize) != cudaSuccess ||
-        cudaMalloc(&d_c, vec_memsize) != cudaSuccess) {
+        cudaMalloc(&d_c, double_memsize) != cudaSuccess) {
         fprintf(stderr, "CUDA memory allocation failed\n");
     }
     if (cudaMemcpy(d_a, v1, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess ||
@@ -169,12 +186,12 @@ void vec3d_dot_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
     }
     int threadsPerBlock = 256;
     int blocksPerGrid = (batch_size + threadsPerBlock - 1) / threadsPerBlock;
-    vec3d_mul_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
+    vec3d_dot_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
     cudaError_t kernelError = cudaGetLastError();
     if (kernelError != cudaSuccess) {
         fprintf(stderr, "Kernel launch error: %s\n", cudaGetErrorString(kernelError));
     }
-    if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
+    if (cudaMemcpy(result, d_c, double_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
         fprintf(stderr, "CUDA memory copy to host failed\n");
     }
 
@@ -212,3 +229,29 @@ void vec3d_mul_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
 
 } 
 
+void vec3d_cross_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+  size_t vec_memsize = batch_size * sizeof(Vec3_d);
+  Vec3_d *d_a, *d_b, *d_c;
+      if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_b, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_c, vec_memsize) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory allocation failed\n");
+    }
+    if (cudaMemcpy(d_a, v1, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess ||
+        cudaMemcpy(d_b, v2, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to device failed\n");
+    }
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (batch_size + threadsPerBlock - 1) / threadsPerBlock;
+    vec3d_cross_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
+    cudaError_t kernelError = cudaGetLastError();
+    if (kernelError != cudaSuccess) {
+        fprintf(stderr, "Kernel launch error: %s\n", cudaGetErrorString(kernelError));
+    }
+    if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to host failed\n");
+    }
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
+} 
