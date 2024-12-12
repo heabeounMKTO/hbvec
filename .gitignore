@@ -41,7 +41,7 @@ build/
 *.su
 *.idb
 *.pdb
-
+libs/
 # Kernel Module Compile Results
 *.mod*
 *.cmd
