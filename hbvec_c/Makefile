@@ -36,11 +36,12 @@ test_scalar:
 	gcc test.c -o test -lm
 
 # ayyy
-# hbvec_gpu:
-# 	mkdir -p libs
-# 	nvcc -c vec_gpu.cu -o libs/vecgpu.o
-# 	ar rcs libs/libhbvecgpu.a libs/vecgpu.o
+hbvec_gpu:
+	mkdir -p libs
+	nvcc -c vec_gpu.cu -o libs/vec_gpu.o
+	ar rcs libs/libhbvec_gpu.a libs/vec_gpu.o
+	rm libs/vec_gpu.o
 
 test_gpu: hbvec_gpu
-	gcc test_cuda.c -L. -lvec_gpu -lcudart -o test_gpu -lm 
+	gcc test_cuda.c -L./libs -lhbvec_gpu -lcudart -o test_gpu -lm 
 	./test_gpu

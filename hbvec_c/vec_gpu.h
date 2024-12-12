@@ -9,16 +9,27 @@
 extern "C" {
 #endif // extern cpp start
 
-typedef struct {
- double x,y,z;
-} Vec3_d;
-// #include "vec.h"
+#include "vec.h"
 
 void vec3d_add_cuda(Vec3_d *v1, 
                     Vec3_d *v2, 
                     Vec3_d *result, 
                     int batch_size); 
 
+void vec3d_sub_cuda(Vec3_d *v1, 
+                    Vec3_d *v2,
+                    Vec3_d *result, 
+                    int batch_size); 
+
+void vec3d_mul_cuda(Vec3_d *v1, 
+                    Vec3_d *v2,
+                    Vec3_d *result, 
+                    int batch_size); 
+
+void vec3d_div_cuda(Vec3_d *v1, 
+                    Vec3_d *v2,
+                    Vec3_d *result, 
+                    int batch_size); 
 #ifdef __cplusplus
 }
 #endif // extern cpp end

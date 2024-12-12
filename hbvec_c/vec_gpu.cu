@@ -1,13 +1,8 @@
 #include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 #include <stdio.h>
 #include "vec_gpu.h"
 
-
-// Create a new Vec3_d
-__device__ __host__ Vec3_d vec3d_new(double x, double y, double z) {
-    Vec3_d v = {x, y, z};
-    return v;
-}
 
 // Add two Vec3_d
 __device__ Vec3_d vec3d_add_device(Vec3_d v1, Vec3_d v2) {
@@ -91,6 +86,22 @@ __global__ void vec3d_sub_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) 
     }
 }
 
+
+__global__ void vec3d_mul_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_mul_device(v1[idx], v2[idx]);
+    }
+}
+
+__global__ void vec3d_div_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        result[idx] = vec3d_div_device(v1[idx], v2[idx]);
+    }
+}
+
+
 void vec3d_add_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
   size_t vec_memsize = batch_size * sizeof(Vec3_d);
   Vec3_d *d_a, *d_b, *d_c;
@@ -113,4 +124,66 @@ void vec3d_add_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
     if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
         fprintf(stderr, "CUDA memory copy to host failed\n");
     }
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
 } 
+
+void vec3d_sub_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+  size_t vec_memsize = batch_size * sizeof(Vec3_d);
+  Vec3_d *d_a, *d_b, *d_c;
+      if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_b, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_c, vec_memsize) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory allocation failed\n");
+    }
+    if (cudaMemcpy(d_a, v1, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess ||
+        cudaMemcpy(d_b, v2, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to device failed\n");
+    }
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (batch_size + threadsPerBlock - 1) / threadsPerBlock;
+    vec3d_sub_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
+    cudaError_t kernelError = cudaGetLastError();
+    if (kernelError != cudaSuccess) {
+        fprintf(stderr, "Kernel launch error: %s\n", cudaGetErrorString(kernelError));
+    }
+    if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to host failed\n");
+    }
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
+} 
+
+
+
+void vec3d_mul_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+  size_t vec_memsize = batch_size * sizeof(Vec3_d);
+  Vec3_d *d_a, *d_b, *d_c;
+      if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_b, vec_memsize) != cudaSuccess ||
+        cudaMalloc(&d_c, vec_memsize) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory allocation failed\n");
+    }
+    if (cudaMemcpy(d_a, v1, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess ||
+        cudaMemcpy(d_b, v2, vec_memsize, cudaMemcpyHostToDevice) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to device failed\n");
+    }
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (batch_size + threadsPerBlock - 1) / threadsPerBlock;
+    vec3d_mul_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c, batch_size);
+    cudaError_t kernelError = cudaGetLastError();
+    if (kernelError != cudaSuccess) {
+        fprintf(stderr, "Kernel launch error: %s\n", cudaGetErrorString(kernelError));
+    }
+    if (cudaMemcpy(result, d_c, vec_memsize, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        fprintf(stderr, "CUDA memory copy to host failed\n");
+    }
+
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
+
+} 
+
