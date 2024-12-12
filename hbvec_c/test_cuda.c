@@ -3,7 +3,7 @@
 
 
 int main() {
-  int batch_size = 9000000;
+  int batch_size = 10000000;
   Vec3_d* v1 = (Vec3_d *) malloc(batch_size * sizeof(Vec3_d));
   Vec3_d* v2 = (Vec3_d *) malloc(batch_size * sizeof(Vec3_d));
   Vec3_d* result= (Vec3_d *) malloc(batch_size * sizeof(Vec3_d));
@@ -14,6 +14,6 @@ int main() {
   }
   // vec3d_add_cuda(v1, v2, result, batch_size); 
   vec3d_mul_cuda(v1, v2, result, batch_size); 
-  vec3d_add_cuda(result, v2, result2, batch_size); 
+  vec3d_dot_cuda(result, v2, result2, batch_size); 
   vec3d_print(*result2);
 }
