@@ -49,5 +49,6 @@ cudavec:
 	rm libs/vec_gpu.o
 
 test_gpu: cudavec 
-	gcc test_cuda.c -L./libs -lhbvec_gpu -lcudart -o test_gpu -lm 
-	./test_gpu
+	mkdir -p build
+	gcc test_cuda.c -L./libs -lhbvec_gpu -lcudart -o build/test_gpu -lm 
+	./build/test_gpu
