@@ -223,14 +223,12 @@ static inline double vec3d_cosine_similarity(Vec3_d v1 , Vec3_d v2) {
 }
 
 
-
 static inline Vec_d* vecd_new(int dimension) {
   Vec_d* vec = (Vec_d*)malloc(sizeof(Vec_d));
   if (vec == NULL) {
     fprintf(stderr, "memalloc failed for Vec_d!\n");
     return NULL;
   }
-
   vec->dimension = dimension;
   vec->components = (double*)calloc(dimension, sizeof(double));
   if (vec->components == NULL) {
@@ -240,6 +238,7 @@ static inline Vec_d* vecd_new(int dimension) {
   }
   return vec;
 }
+
 static inline void vecd_free(Vec_d* vec) {
   if (vec) {
     free(vec->components);
@@ -266,20 +265,18 @@ static inline double vecd_get(Vec_d* vec, int index) {
     return vec->components[index];
 }
 
-static inline Vec_d* vecd_zeros(int length) {
-  Vec_d* vec = vecd_new(length);
-  for (int fuck =0 ; fuck < length; fuck++) {
-    vecd_set(vec, fuck, 0.0);
+static inline Vec_d* vecd_zeros(int dim) {
+  Vec_d* vec = vecd_new(dim);
+  for (int i=0; i<dim; i++) {
+    vec->components[i] = 0.0;
   }
   return vec;
 }
 
-
-
-static inline Vec_d* vecd_ones(int length) {
-  Vec_d* vec = vecd_new(length);
-  for (int fuck =0 ; fuck < length; fuck++) {
-    vecd_set(vec, fuck, 1.0);
+static inline Vec_d* vecd_ones(int dim) {
+  Vec_d* vec = vecd_new(dim);
+  for (int i=0; i<dim; i++) {
+    vec->components[i] = 1.0;
   }
   return vec;
 }
@@ -430,9 +427,18 @@ static inline Vec_d* vecd_unit(Vec_d* v) {
   return result;
 }
 
-static inline Vec_d* vecd_random(int vec_length) {
-  mt19937_state state;
-  manual_seed(&state, 182);
+
+static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
+    if (!v1 || !v2 || v1->dimension != v2->dimension) {
+        fprintf(stderr, "Vectors must have same dimension for multiplication\n");
+        return -1;
+    }
+  double result =  vecd_dot(v1,v2) /  (vecd_length(v1) * vecd_length(v2));
+  return result;
+}
+
+static inline Vec_d* vecd_random(int vec_length, mt19937_state state) {
+  // mt19937_state state;
   Vec_d* result = vecd_new(vec_length);
   for (int i =0; i<result->dimension; i++) {
     result->components[i] = (double) randint32(&state);

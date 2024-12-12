@@ -1,19 +1,26 @@
 #include <stdio.h>
+#include "rand.h"
 #include "vec.h"
+#include <time.h>
+#define BENCH_RUN 1000
 
 
+void bench_vecadd(){
+  mt19937_state state;
+  manual_seed(&state, 12348);
+  clock_t begin = clock();
+  for (int i = 0; i < BENCH_RUN; i++) {
+    Vec_d* v1 = vecd_random(20000, state);
+    Vec_d* v2 = vecd_random(20000, state);
+    Vec_d* add_shit = vecd_add(v1, v2);
+  }
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("bench_vecadd time: %f seconds\n", time_spent);
+}
 
 
 int main() {
-  Vec_d* v1 = vecd_random(200000);
-  Vec_d* v2 = vecd_random(200000);
-  v1 = vecd_scale(v1, 0.000001);
-  double dot = vecd_length(v1); 
-  printf("length %f\n", dot);
-
-  // Vec_d* unit_vec = vecd_unit(v1);
-  // Vec_d* _v = vecd_add(v1, v2);
-  // Vec_d* add_ = vecd_add(v1, v2);
-  // double dot = vecd_dot(add_, v1);
-  // Vec_d* unit = vecd_unit(v2);
+  bench_vecadd();  
+  return 0;
 }
