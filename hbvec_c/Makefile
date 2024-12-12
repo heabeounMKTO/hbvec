@@ -4,10 +4,11 @@ test_scalar:
 
 # ayyy
 hbvec_gpu:
-	mkdir -p libs
-	nvcc -c vec_gpu.cu -o libs/vecgpu.o
-	ar rcs libs/libhbvecgpu.a libs/vecgpu.o
+	nvcc -c vec_gpu.cu -o vec_gpu.o
+	ar rcs libvec_gpu.a vec_gpu.o
+	rm vec_gpu.o
+	
 
-test_cuda: hbvec_gpu
-	gcc -DHBVEC_USE_CUDA test_cuda.c -L libs/ -lhbvecgpu -lcudart -lm -o test_cuda
-	./test_cuda
+test_gpu: hbvec_gpu
+	gcc test_cuda.c -L. -lvec_gpu -lcudart -o test_gpu -lm 
+	./test_gpu

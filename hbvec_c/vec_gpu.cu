@@ -1,9 +1,7 @@
 #include <cuda_runtime.h>
 #include <stdio.h>
+#include "vec_gpu.h"
 
-typedef struct {
-    double x, y, z;
-} Vec3_d;
 
 // Create a new Vec3_d
 __device__ __host__ Vec3_d vec3d_new(double x, double y, double z) {
@@ -93,7 +91,7 @@ __global__ void vec3d_sub_kernel(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int n) 
     }
 }
 
-void vec3d_add_gpu(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
+void vec3d_add_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result, int batch_size) {
   size_t vec_memsize = batch_size * sizeof(Vec3_d);
   Vec3_d *d_a, *d_b, *d_c;
       if (cudaMalloc(&d_a, vec_memsize) != cudaSuccess ||
