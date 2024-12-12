@@ -427,7 +427,6 @@ static inline Vec_d* vecd_unit(Vec_d* v) {
   return result;
 }
 
-
 static inline double vecd_cosine_similarity(const Vec_d* v1, const Vec_d* v2){
     if (!v1 || !v2 || v1->dimension != v2->dimension) {
         fprintf(stderr, "Vectors must have same dimension for multiplication\n");

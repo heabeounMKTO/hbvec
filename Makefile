@@ -42,12 +42,12 @@ test_simd:
 test_sc: test_scalar test_simd
 
 # ayyy
-hbvec_gpu:
+cudavec:
 	mkdir -p libs
 	nvcc -c vec_gpu.cu -o libs/vec_gpu.o
 	ar rcs libs/libhbvec_gpu.a libs/vec_gpu.o
 	rm libs/vec_gpu.o
 
-test_gpu: hbvec_gpu
+test_gpu: cudavec 
 	gcc test_cuda.c -L./libs -lhbvec_gpu -lcudart -o test_gpu -lm 
 	./test_gpu

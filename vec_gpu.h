@@ -36,10 +36,17 @@ void vec3d_dot_cuda(Vec3_d *v1,
                     double *result, 
                     int batch_size); 
 
+void vec3d_cosine_similarity_cuda(Vec3_d *v1, 
+                    Vec3_d *v2,
+                    double *result, 
+                    int batch_size); 
+
 void vec3d_cross_cuda(Vec3_d *v1, 
                     Vec3_d *v2,
                     Vec3_d *result, 
                     int batch_size); 
+
+
 
 #ifdef __cplusplus
 }
