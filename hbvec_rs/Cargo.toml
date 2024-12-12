@@ -1,9 +1,0 @@
-[package]
-name = "hbvec"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-half = "2.4.1"
-rand = "0.8.5"
-random = "0.14.0"
