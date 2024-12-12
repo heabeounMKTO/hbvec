@@ -16,5 +16,5 @@ int main() {
   // vec3d_add_cuda(v1, v2, result, batch_size);
   vec3d_mul_cuda(v1, v2, result, batch_size);
   vec3d_reflect_cuda(result, v2, result2, batch_size);
-
+  vec3d_print(result2[341]);
 }

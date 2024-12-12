@@ -4,13 +4,16 @@
 #include <cuda_runtime_api.h>
 #include <stdio.h>
 
+
+
+
 // Add two Vec3_d
 __device__ Vec3_d vec3d_add_device(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
   return v;
 }
 
-__device__ Vec3_d vec3d_from_float_device(double f) {
+__device__ Vec3_d vec3d_from_float_device(float f) {
   Vec3_d v = {f, f, f};
   return v;
 }
