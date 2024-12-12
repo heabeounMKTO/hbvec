@@ -7,6 +7,9 @@
 
 
 
+////----------------------- Vec3_d Operations /////////////////////////////////
+
+
 // Add two Vec3_d
 __device__ Vec3_d vec3d_add_device(Vec3_d v1, Vec3_d v2) {
   Vec3_d v = {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
@@ -33,13 +36,12 @@ __device__ Vec3_d vec3d_div_device(Vec3_d v1, Vec3_d v2) {
   if (v2.y != 0.0f) {
     result.y = v1.y / v2.y;
   } else {
-    result.y = 0.0f; // Handle division by zero as needed
+    result.y = 0.0f; 
   }
   if (v2.z != 0.0f) {
     result.z = v1.z / v2.z;
   } else {
-    result.z = 0.0f; // Handle division by zero as needed
-  }
+    result.z = 0.0f;   }
   return result;
 }
 
@@ -375,3 +377,7 @@ void vec3d_reflect_cuda(Vec3_d *v1, Vec3_d *v2, Vec3_d *result,
   cudaFree(d_b);
   cudaFree(d_c);
 }
+
+
+
+/////////------------------------------Vec3_d oeprations

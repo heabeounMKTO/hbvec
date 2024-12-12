@@ -1,4 +1,4 @@
-/// TODO; vec from number with matching from double int or whatever smh
+// TODO; vec from number with matching from double int or whatever smh
 
 #ifndef HB_VEC_H
 #define HB_VEC_H
