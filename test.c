@@ -1,4 +1,4 @@
-#include "vec_rf.h"
+#include "vec.h"
 
 
 
@@ -16,8 +16,15 @@ int main() {
   double cs = vec3_cosine_similarity(&test_f64, &test_i32);
   Vec3 refl = vec3_reflect(&test_f64, &test_f32);
   double lsq = vec3_lengthsq(&test_f64);
+  Vec3 randomshit = vec3_create_random(VEC3_DOUBLE, 1234);
+  Vec3 randomshort = vec3_create_random(VEC3_SHORT, 144234);
+  Vec3 randomnrm = vec3_create_random_normalized(14423454);
   vec3_print(&neg);
   vec3_print(&mod);
+  printf("RANDOM SHIT\n");
+  vec3_print(&randomshit);
+  vec3_print(&randomshort);
+  vec3_print(&randomnrm);
   printf("coseinf %f\n", cs);
   printf("length_sq %f\n", lsq);
   printf("refl\n");

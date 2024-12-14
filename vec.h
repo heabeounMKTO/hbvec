@@ -1,11 +1,11 @@
 #ifndef HB_VEC_H
 #define HB_VEC_H
-#include "rand.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <float.h>
+#include <limits.h>
 
 
 #ifdef __cplusplus
@@ -279,7 +279,7 @@ static inline void random_permutation(int *data, int numel,
 /////// utilities ///////////
 ////////////////////////////
 
-// hbvec internal clamping macro 
+// hbvec internal clamping , SHRT_MAXmacro 
 #ifndef __HB_VEC_CLAMP__
   #define __HB_VEC_CLAMP__(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 #endif
@@ -302,6 +302,12 @@ static inline bool vec3_dtype_eq(const Vec3* a , const Vec3* b) {
   return a->dtype == b->dtype;
 }
 
+/// returns a random double within the specified boundary
+static inline double random_clamped(double min, double max, int seed) {
+  mt19937_state state;
+  manual_seed(&state, seed);
+  return __HB_VEC_CLAMP__(randfloat64(&state), min, max);
+} 
 
 
 static inline void vec3_print(const Vec3* vec) 
@@ -393,6 +399,7 @@ static inline void vec3_print_pair(const Vec3* a, const Vec3* b) {
 }
 
 
+////////////////////////////////////////
 //////// VECTOR OPERATIONS /////////////
 ///////////////////////////////////////
 /* individual opertaions for each dtype because later 
@@ -400,8 +407,11 @@ static inline void vec3_print_pair(const Vec3* a, const Vec3* b) {
 `case` `switch` bullshit brah */
 
 
+////////////////////////////////////////
 ///////////// CREATE //////////////////
 //////////////////////////////////////
+/// TODO; probably pass mt19937_state for the rand fucntions instead ofa  `int seed`
+
 static inline Vec3 vec3_create_short(float x, float y, float z) 
 {
     Vec3 v;
@@ -445,38 +455,45 @@ static inline Vec3 vec3_create_double(double x, double y, double z)
 static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype, int seed) {
   mt19937_state state;
   manual_seed(&state, seed);
-    switch (vec_dtype) {
+  Vec3 vec;
+  vec.dtype = vec_dtype;
+  switch (vec_dtype) {
         case VEC3_FLOAT:
-            vec->data.f32[0] = rand_f32();
-            vec->data.f32[1] = rand_f32();
-            vec->data.f32[2] = rand_f32();
+            vec.data.f32[0] = randfloat32(&state);
+            vec.data.f32[1] = randfloat32(&state);
+            vec.data.f32[2] = randfloat32(&state);
             break;
-
         case VEC3_DOUBLE:
-            vec->data.f64[0] = (double)rand_f32();
-            vec->data.f64[1] = (double)rand_f32();
-            vec->data.f64[2] = (double)rand_f32();
+            vec.data.f64[0] = randfloat64(&state);
+            vec.data.f64[1] = randfloat64(&state);
+            vec.data.f64[2] = randfloat64(&state);
             break;
-
         case VEC3_INT:
-            vec->data.i32[0] = rand_f32() * INT_MAX; // Scale to integer range
-            vec->data.i32[1] = rand_f32() * INT_MAX;
-            vec->data.i32[2] = rand_f32() * INT_MAX;
+            vec.data.i32[0] = randint32(&state); // Scale to integer range
+            vec.data.i32[1] = randint32(&state);
+            vec.data.i32[2] = randint32(&state);
             break;
-
         case VEC3_SHORT:
-            vec->data.i16[0] = rand_f32() * SHRT_MAX; // Scale to short range
-            vec->data.i16[1] = rand_f32() * SHRT_MAX;
-            vec->data.i16[2] = rand_f32() * SHRT_MAX;
+            vec.data.i16[0] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); // Scale to short range
+            vec.data.i16[1] = (short) randint32(&state);
+            vec.data.i16[2] = (short) randint32(&state);
             break;
-
-        default:
-            // Handle unknown types if needed
-            break;
-    }
-
-
+  }
+  return vec;
 }
+
+
+// creates random normalized unit vectors, between -1.0 and 1.0
+// Vec3.dtype = VEC3_FLOAT
+static inline Vec3 vec3_create_random_normalized(int seed) {
+  Vec3 vec;
+  vec.dtype = VEC3_FLOAT;
+  vec.data.f32[0] = random_clamped(-1.0, 1.0 , seed);  
+  vec.data.f32[1] = random_clamped(-1.0, 1.0 , seed);  
+  vec.data.f32[2] = random_clamped(-1.0, 1.0 , seed);  
+  return vec;
+}
+
 
 
 /// infers data type from input, 
