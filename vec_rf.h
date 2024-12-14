@@ -70,6 +70,64 @@ static inline void vec3_print(const Vec3* vec)
     }
 }
 
+static inline double vec3x(const Vec3* v) {
+  double res;
+  switch (v->dtype) {
+    case VEC3_DOUBLE:
+      res = v->data.f64[0];
+      break;
+    case VEC3_FLOAT:
+      res = (double) v->data.f32[0];
+      break;
+    case VEC3_INT:
+      res = (double) v->data.i32[0];
+      break;
+    case VEC3_SHORT:
+      res = (double) v->data.i16[0];
+      break;
+  }
+  return res;
+}
+
+static inline double vec3y(const Vec3* v) {
+  double res;
+  switch (v->dtype) {
+    case VEC3_DOUBLE:
+      res = v->data.f64[1];
+      break;
+    case VEC3_FLOAT:
+      res = (double) v->data.f32[1];
+      break;
+    case VEC3_INT:
+      res = (double) v->data.i32[1];
+      break;
+    case VEC3_SHORT:
+      res = (double) v->data.i16[1];
+      break;
+  }
+  return res;
+}
+
+static inline double vec3z(const Vec3* v) {
+  double res;
+  switch (v->dtype) {
+    case VEC3_DOUBLE:
+      res = v->data.f64[2];
+      break;
+    case VEC3_FLOAT:
+      res = (double) v->data.f32[2];
+      break;
+    case VEC3_INT:
+      res = (double) v->data.i32[2];
+      break;
+    case VEC3_SHORT:
+      res = (double) v->data.i16[2];
+      break;
+  }
+  return res;
+}
+
+
 
 static inline void vec3_print_pair(const Vec3* a, const Vec3* b) {
   fprintf(stdout, "Vec3 a:\n");
@@ -301,8 +359,8 @@ static inline Vec3 _vec3_i16_add(const Vec3* a, const Vec3* b) {
 
 
 
-////////////// SUB /////////////
-////////////////////////////////
+////////////// SUBTRACT /////////
+/////////////////////////////////
 
 static inline Vec3 _vec3_f32_sub(const Vec3* a, const Vec3* b) {
     //type check, cant be too sure these days!     
@@ -365,7 +423,8 @@ static inline Vec3 _vec3_i16_sub(const Vec3* a, const Vec3* b) {
 
 ////////////// MULTIPLY //////////////////
 /////////////////////////////////////////
-///
+
+
 static inline Vec3 _vec3_f32_mul(const Vec3* a, const Vec3* b) {
     //type check, cant be too sure these days!     
     if (!vec3_dtype_eq(a, b)) {
@@ -540,14 +599,44 @@ static inline Vec3 _vec3_i16_div(const Vec3* a, const Vec3* b) {
 }
 
 
+
+////////////// DOT PRODUCT/////////////////
+//////////////////////////////////////////
+
+/* vector are casted to the result data type */
+
+static inline float _vec3_f32_dot(const Vec3* a, const Vec3* b) {
+    Vec3 _cast_a = vec3_cast(a, VEC3_FLOAT); 
+    Vec3 _cast_b = vec3_cast(b, VEC3_FLOAT); 
+    return (_cast_a.data.f32[0] * _cast_b.data.f32[0]) +
+             (_cast_a.data.f32[1] * _cast_b.data.f32[1]) +
+             (_cast_a.data.f32[2] * _cast_b.data.f32[2]);
+}
+
+static inline double _vec3_f64_dot(const Vec3* a, const Vec3* b) {
+    Vec3 _cast_a = vec3_cast(a, VEC3_DOUBLE); 
+    Vec3 _cast_b = vec3_cast(b, VEC3_DOUBLE); 
+    return (_cast_a.data.f64[0] * _cast_b.data.f64[0]) +
+             (_cast_a.data.f64[1] * _cast_b.data.f64[1]) +
+             (_cast_a.data.f64[2] * _cast_b.data.f64[2]);
+}
+
+
+
+//////////////// CROSS PRODUCT /////////////////
+///////////////////////////////////////////////
+
+
+
+
 ///////////// PUBLIC vec3 FUNCTIONS///////////////
 /////////////////////////////////////////////////
 /* 
  * there is no automatic type casting for vector arithemetic 
 all conversions must be explicit! 
-*
-*
+ *
 */
+
 static inline Vec3 vec3_add(const Vec3 *a, const Vec3 *b) {
   Vec3 result;
   switch (a->dtype) {
