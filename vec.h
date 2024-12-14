@@ -275,6 +275,40 @@ static inline void random_permutation(int *data, int numel,
 
 
 
+////////////////////////////////////////////
+//// FAST and APPROXIMATE MATH /////////////
+///////////////////////////////////////////
+#ifdef HB_VEC_USE_FAST_MATH
+
+static inline float madd(const float a, const float b , const float c) {
+  return a * b + c;
+}
+
+/* Based on http://www.pouet.net/topic.php?which=9132&page=2 */
+static inline float fast_acosf(float x) {
+  const float f = fabsf(x);
+  /* clamp and crush denormals. */
+  const float m = (f < 1.0f) ? 1.0f - (1.0f - f) : 1.0f;
+  const float a = sqrtf(1.0f - m) *
+                  (1.5707963267f + m * (-0.213300989f + m * (0.077980478f + m * -0.02164095f)));
+  return x < 0 ? M_PI_F - a : a;
+}
+
+/* http://mathforum.org/library/drmath/view/62672.html */
+static inline float fast_atanf(float x)
+{
+  const float a = fabsf(x);
+  const float k = a > 1.0f ? 1 / a : a;
+  const float s = 1.0f - (1.0f - k); /* Crush denormals. */
+  const float t = s * s;
+  float r = s * madd(0.43157974f, t, 1.0f) / madd(madd(0.05831938f, t, 0.76443945f), t, 1.0f);
+  if (a > 1.0f) {
+    r = M_PI_2_F - r;
+  }
+  return copysignf(r, x);
+}
+
+#endif // HB_VEC_USE_FAST_MATH
 /////////////////////////////
 /////// utilities ///////////
 ////////////////////////////
@@ -642,8 +676,6 @@ static inline Vec3 _vec3_cast(const Vec3 *v, Vec3Dtype target_type) {
 
 
 
-
-
 /////////////////ADD/////////////////
 ////////////////////////////////////
 
@@ -652,6 +684,12 @@ static inline Vec3 _vec3_cast(const Vec3 *v, Vec3Dtype target_type) {
 static inline double vec3_sum(const Vec3 *a) {
   Vec3 _cast_sum =  _vec3_cast(a, VEC3_DOUBLE);
   return _cast_sum.data.f64[0] + _cast_sum.data.f64[1] + _cast_sum.data.f64[2];
+}
+
+// averages shit in the vec
+static inline double vec3_avg(const Vec3 *a) {
+  Vec3 _cast_sum =  _vec3_cast(a, VEC3_DOUBLE);
+  return vec3_sum(&_cast_sum) / 3;
 }
 
 
@@ -1094,11 +1132,36 @@ static inline Vec3 _vec3_i16_cross(const Vec3* a, const Vec3* b) {
 
 ///////////// PUBLIC vec3 FUNCTIONS///////////////
 /////////////////////////////////////////////////
-/* 
- * there is no automatic type casting for vector arithemetic 
-all conversions must be explicit! 
- *
-*/
+
+
+/// square root, returns in `VEC3_FLOAT`
+static inline Vec3 vec3_sqrt(const Vec3 *a) {
+  Vec3 vec = _vec3_cast(a, VEC3_FLOAT);
+  vec.data.f32[0] = sqrtf(vec.data.f32[0]); 
+  vec.data.f32[1] = sqrtf(vec.data.f32[1]); 
+  vec.data.f32[2] = sqrtf(vec.data.f32[2]); 
+  return vec; 
+}
+
+/// floor (rounds down), returns in `VEC3_FLOAT`
+static inline Vec3 vec3_floor(const Vec3 *a) {
+  Vec3 vec = _vec3_cast(a, VEC3_FLOAT);
+  vec.data.f32[0] = floor(vec.data.f32[0]); 
+  vec.data.f32[1] = floor(vec.data.f32[1]); 
+  vec.data.f32[2] = floor(vec.data.f32[2]); 
+  return vec; 
+}
+
+/// ceil (rounds up), returns in `VEC3_FLOAT`
+static inline Vec3 vec3_ceil(const Vec3 *a) {
+  Vec3 vec = _vec3_cast(a, VEC3_FLOAT);
+  vec.data.f32[0] = ceil(vec.data.f32[0]); 
+  vec.data.f32[1] = ceil(vec.data.f32[1]); 
+  vec.data.f32[2] = ceil(vec.data.f32[2]); 
+  return vec; 
+}
+
+
 
 static inline Vec3 vec3_add(const Vec3 *a, const Vec3 *b) {
   Vec3 result;
