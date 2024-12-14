@@ -1,4 +1,4 @@
-// TODO; vec from number with matching from double int or whatever smh
+/// TODO; vec from number with matching from double int or whatever smh
 
 #ifndef HB_VEC_H
 #define HB_VEC_H
@@ -82,6 +82,7 @@ static inline Vec3 vec3_div(Vec3 v1, Vec3 v2) {
   }
   return result;
 }
+
 static inline Vec3 vec3_negate(Vec3 v) {
   Vec3 neg = {-v.x, -v.y, -v.z};
   return neg;
