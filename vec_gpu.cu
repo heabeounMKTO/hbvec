@@ -247,7 +247,6 @@ void vec3d_dot_cuda(Vec3_d *v1, Vec3_d *v2, double *result, int batch_size) {
       cudaSuccess) {
     fprintf(stderr, "CUDA memory copy to host failed\n");
   }
-
   cudaFree(d_a);
   cudaFree(d_b);
   cudaFree(d_c);
