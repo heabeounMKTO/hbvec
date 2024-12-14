@@ -474,9 +474,9 @@ static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype, int seed) {
             vec.data.i32[2] = randint32(&state);
             break;
         case VEC3_SHORT:
-            vec.data.i16[0] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); // Scale to short range
-            vec.data.i16[1] = (short) randint32(&state);
-            vec.data.i16[2] = (short) randint32(&state);
+            vec.data.i16[0] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX);             
+      vec.data.i16[1] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); 
+            vec.data.i16[2] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); 
             break;
   }
   return vec;
