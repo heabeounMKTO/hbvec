@@ -269,13 +269,13 @@ static inline void random_permutation(int *data, int numel,
     data[j] = tmp;
   }
 }
-/////////////////////////////////////
-////  RANDOM STATE
+////////////////////////////
+///////  RANDOM STATE
 ////////////////////////////
 
 
 
-
+/////////////////////////////
 /////// utilities ///////////
 ////////////////////////////
 
@@ -441,6 +441,43 @@ static inline Vec3 vec3_create_double(double x, double y, double z)
     v.dtype = VEC3_DOUBLE;
     return v;
 }
+
+static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype, int seed) {
+  mt19937_state state;
+  manual_seed(&state, seed);
+    switch (vec_dtype) {
+        case VEC3_FLOAT:
+            vec->data.f32[0] = rand_f32();
+            vec->data.f32[1] = rand_f32();
+            vec->data.f32[2] = rand_f32();
+            break;
+
+        case VEC3_DOUBLE:
+            vec->data.f64[0] = (double)rand_f32();
+            vec->data.f64[1] = (double)rand_f32();
+            vec->data.f64[2] = (double)rand_f32();
+            break;
+
+        case VEC3_INT:
+            vec->data.i32[0] = rand_f32() * INT_MAX; // Scale to integer range
+            vec->data.i32[1] = rand_f32() * INT_MAX;
+            vec->data.i32[2] = rand_f32() * INT_MAX;
+            break;
+
+        case VEC3_SHORT:
+            vec->data.i16[0] = rand_f32() * SHRT_MAX; // Scale to short range
+            vec->data.i16[1] = rand_f32() * SHRT_MAX;
+            vec->data.i16[2] = rand_f32() * SHRT_MAX;
+            break;
+
+        default:
+            // Handle unknown types if needed
+            break;
+    }
+
+
+}
+
 
 /// infers data type from input, 
 ///
