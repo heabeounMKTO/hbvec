@@ -29,4 +29,6 @@ int main() {
 ```
 
 please link with libmath like so
-`gcc program.c -o program -lm`
+```bash
+gcc program.c -o program -lm`
+```
