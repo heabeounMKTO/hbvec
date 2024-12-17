@@ -12,7 +12,6 @@
 extern "C" {
 #endif
 
-
 typedef enum {
     VEC3_FLOAT,
     VEC3_INT,
