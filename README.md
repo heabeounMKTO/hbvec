@@ -26,5 +26,7 @@ int main() {
   Vec3 mod = vec3_mod(&test_f64, &test_f64);
   double cs = vec3_cosine_similarity(&test_f64, &test_i32);
 }
-
 ```
+
+please link with libmath like so
+`gcc program.c -o program -lm`
