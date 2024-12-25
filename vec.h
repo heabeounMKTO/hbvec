@@ -7,6 +7,10 @@
 #include <float.h>
 #include <limits.h>
 
+#if defined (__SSE__)
+#include <xmmintrin.h>
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +32,6 @@ typedef struct {
     } data;
     Vec3Dtype dtype;
 } Vec3;
-
 
 
 //// CONSTANTS /////////
