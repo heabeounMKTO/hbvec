@@ -41,7 +41,7 @@ typedef struct {
     } data;
     Vec3Dtype dtype;
 } Vec3;
-
+/**
 #ifdef HB_VEC_SSE_KERNEL
 typedef struct {
     union {
@@ -53,6 +53,8 @@ typedef struct {
     Vec3Dtype dtype;
 } Vec3_simd;
 #endif
+**/
+
 
 //// CONSTANTS /////////
 ///////////////////////
@@ -590,7 +592,7 @@ static inline Vec3 vec3_from_number(double x) {
 
 
 
-
+/**
 #ifdef HB_VEC_SSE_KERNEL 
 static inline Vec3_simd _vec3_cast(const Vec3 v) {
   Vec3_simd result;
@@ -618,7 +620,7 @@ static inline Vec3_simd _vec3_cast(const Vec3 v) {
 }
 
 #endif
-
+**/
 
 /// casts vecs from one dtype to another
 /// 
@@ -1122,11 +1124,7 @@ static inline double _vec3_f64_dot(const Vec3 a, const Vec3 b) {
 }
 
 static inline float vec3_dot(const Vec3 a, const Vec3 b) {
-  #ifdef HB_VEC_SSE_KERNEL
-  return _mm_cvtss_f32(_mm_dp_ps(a, b, 0x7F));  
-  #else 
   return _vec3_f32_dot(a, b);
-  #endif
 }
 
 //////////////// CROSS PRODUCT /////////////////
