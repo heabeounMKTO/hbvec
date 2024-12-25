@@ -12,7 +12,6 @@
 extern "C" {
 #endif
 
-
 typedef enum {
     VEC3_FLOAT,
     VEC3_INT,
@@ -1065,6 +1064,10 @@ static inline double _vec3_f64_dot(const Vec3* a, const Vec3* b) {
     return (_cast_a.data.f64[0] * _cast_b.data.f64[0]) +
              (_cast_a.data.f64[1] * _cast_b.data.f64[1]) +
              (_cast_a.data.f64[2] * _cast_b.data.f64[2]);
+}
+
+static inline float vec3_dot(const Vec3* a, const Vec3* b) {
+  return _vec3_f32_dot(a, b);
 }
 
 //////////////// CROSS PRODUCT /////////////////
