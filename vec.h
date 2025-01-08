@@ -41,6 +41,7 @@ typedef struct {
     } data;
     Vec3Dtype dtype;
 } Vec3;
+
 /**
 #ifdef HB_VEC_SSE_KERNEL
 typedef struct {
@@ -342,8 +343,57 @@ static inline float fast_atanf(float x)
   #define __HB_VEC_CLAMP__(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 #endif
 
+static inline void  vec3set_x(Vec3 input, double value) {
+    switch (input.dtype) {
+        case VEC3_FLOAT:
+            input.data.f32[0] = (float) value;
+            break;
+        case VEC3_INT:
+            input.data.i32[0] = (int) value;
+            break;
+        case VEC3_DOUBLE:
+            input.data.f64[0] = (double) value;
+            break;
+        case VEC3_SHORT:
+            input.data.i16[0] = (short) value;
+            break;
+    }
+}
 
 
+static inline void  vec3set_y(Vec3 input, double value) {
+    switch (input.dtype) {
+        case VEC3_FLOAT:
+            input.data.f32[1] = (float) value;
+            break;
+        case VEC3_INT:
+            input.data.i32[1] = (int) value;
+            break;
+        case VEC3_DOUBLE:
+            input.data.f64[1] = (double) value;
+            break;
+        case VEC3_SHORT:
+            input.data.i16[1] = (short) value;
+            break;
+    }
+}
+
+static inline void  vec3set_z(Vec3 input, double value) {
+    switch (input.dtype) {
+        case VEC3_FLOAT:
+            input.data.f32[2] = (float) value;
+            break;
+        case VEC3_INT:
+            input.data.i32[2] = (int) value;
+            break;
+        case VEC3_DOUBLE:
+            input.data.f64[2] = (double) value;
+            break;
+        case VEC3_SHORT:
+            input.data.i16[2] = (short) value;
+            break;
+    }
+}
 
 
 static inline void vec3_log(const char* log) {
@@ -361,12 +411,11 @@ static inline bool vec3_dtype_eq(const Vec3 a , const Vec3 b) {
 }
 
 /// returns a random double within the specified boundary
-static inline double random_clamped(double min, double max, int seed) {
-  mt19937_state state;
-  manual_seed(&state, seed);
-  return __HB_VEC_CLAMP__(randfloat64(&state), min, max);
+static inline double random_clamped(double min, double max, mt19937_state *state) {
+  float _a[1];
+  normal_(_a, 1, 0,1, state);
+  return __HB_VEC_CLAMP__(_a[0], min, max);
 } 
-
 
 static inline void vec3_print(const Vec3 vec) 
 {
@@ -510,31 +559,31 @@ static inline Vec3 vec3_create_double(double x, double y, double z)
     return v;
 }
 
-static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype, int seed) {
-  mt19937_state state;
-  manual_seed(&state, seed);
+static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype,mt19937_state *state) {
   Vec3 vec;
   vec.dtype = vec_dtype;
+  float v3[3];
+  normal_(v3, 3, 0, 1, state);
   switch (vec_dtype) {
         case VEC3_FLOAT:
-            vec.data.f32[0] = randfloat32(&state);
-            vec.data.f32[1] = randfloat32(&state);
-            vec.data.f32[2] = randfloat32(&state);
+            vec.data.f32[0] = (float) v3[0];
+            vec.data.f32[1] = (float) v3[1];
+            vec.data.f32[2] = (float) v3[2];
             break;
         case VEC3_DOUBLE:
-            vec.data.f64[0] = randfloat64(&state);
-            vec.data.f64[1] = randfloat64(&state);
-            vec.data.f64[2] = randfloat64(&state);
+            vec.data.f64[0] = (double) v3[0];
+            vec.data.f64[1] = (double) v3[1];
+            vec.data.f64[2] = (double) v3[2];
             break;
         case VEC3_INT:
-            vec.data.i32[0] = randint32(&state); // Scale to integer range
-            vec.data.i32[1] = randint32(&state);
-            vec.data.i32[2] = randint32(&state);
+            vec.data.i32[0] = (int) v3[0];
+            vec.data.i32[1] = (int) v3[1];
+            vec.data.i32[2] = (int) v3[2];
             break;
         case VEC3_SHORT:
-            vec.data.i16[0] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX);             
-      vec.data.i16[1] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); 
-            vec.data.i16[2] = __HB_VEC_CLAMP__((short) randint32(&state), SHRT_MIN, SHRT_MAX); 
+            vec.data.i16[0] = __HB_VEC_CLAMP__((short) v3[0], SHRT_MIN, SHRT_MAX);             
+      vec.data.i16[1] = __HB_VEC_CLAMP__((short) v3[1], SHRT_MIN, SHRT_MAX); 
+            vec.data.i16[2] = __HB_VEC_CLAMP__((short) v3[2], SHRT_MIN, SHRT_MAX); 
             break;
   }
   return vec;
@@ -543,12 +592,12 @@ static inline Vec3 vec3_create_random(Vec3Dtype vec_dtype, int seed) {
 
 // creates random normalized unit vectors, between -1.0 and 1.0
 // Vec3.dtype = VEC3_FLOAT
-static inline Vec3 vec3_create_random_normalized(int seed) {
+static inline Vec3 vec3_create_random_normalized(mt19937_state *state) {
   Vec3 vec;
   vec.dtype = VEC3_FLOAT;
-  vec.data.f32[0] = random_clamped(-1.0, 1.0 , seed);  
-  vec.data.f32[1] = random_clamped(-1.0, 1.0 , seed);  
-  vec.data.f32[2] = random_clamped(-1.0, 1.0 , seed);  
+  vec.data.f32[0] = random_clamped(-1.0, 1.0 , state);  
+  vec.data.f32[1] = random_clamped(-1.0, 1.0 , state);  
+  vec.data.f32[2] = random_clamped(-1.0, 1.0 , state);  
   return vec;
 }
 
@@ -1110,17 +1159,17 @@ static inline Vec3 _vec3_i16_mod(const Vec3 a, const Vec3 b) {
 static inline float _vec3_f32_dot(const Vec3 a, const Vec3 b) {
     Vec3 _cast_a = _vec3_cast(a, VEC3_FLOAT); 
     Vec3 _cast_b = _vec3_cast(b, VEC3_FLOAT); 
-    return (_cast_a.data.f32[0] * _cast_b.data.f32[0]) +
-             (_cast_a.data.f32[1] * _cast_b.data.f32[1]) +
-             (_cast_a.data.f32[2] * _cast_b.data.f32[2]);
+    return _cast_a.data.f32[0] * _cast_b.data.f32[0] +
+             _cast_a.data.f32[1] * _cast_b.data.f32[1] +
+             _cast_a.data.f32[2] * _cast_b.data.f32[2];
 }
 
 static inline double _vec3_f64_dot(const Vec3 a, const Vec3 b) {
     Vec3 _cast_a = _vec3_cast(a, VEC3_DOUBLE); 
     Vec3 _cast_b = _vec3_cast(b, VEC3_DOUBLE); 
-    return (_cast_a.data.f64[0] * _cast_b.data.f64[0]) +
-             (_cast_a.data.f64[1] * _cast_b.data.f64[1]) +
-             (_cast_a.data.f64[2] * _cast_b.data.f64[2]);
+    return _cast_a.data.f64[0] * _cast_b.data.f64[0] +
+             _cast_a.data.f64[1] * _cast_b.data.f64[1] +
+             _cast_a.data.f64[2] * _cast_b.data.f64[2];
 }
 
 static inline float vec3_dot(const Vec3 a, const Vec3 b) {
@@ -1138,9 +1187,9 @@ static inline Vec3 _vec3_f32_cross(const Vec3 a, const Vec3 b) {
     } 
     Vec3 result;
     result.dtype = VEC3_FLOAT;
-    result.data.f32[0] = a.data.f32[1] * b.data.f32[2] - b.data.f32[2] * a.data.f32[1]; 
-    result.data.f32[1] = a.data.f32[2] * b.data.f32[0] - b.data.f32[0] * a.data.f32[2]; 
-    result.data.f32[2] = a.data.f32[0] * b.data.f32[1] - b.data.f32[1] * a.data.f32[0]; 
+    result.data.f32[0] = a.data.f32[1] * b.data.f32[2] - a.data.f32[2] * b.data.f32[1]; 
+    result.data.f32[1] = a.data.f32[2] * b.data.f32[0] - a.data.f32[0] * b.data.f32[2]; 
+    result.data.f32[2] = a.data.f32[0] * b.data.f32[1] - a.data.f32[1] * b.data.f32[0]; 
     return result;
 }
 
@@ -1152,9 +1201,9 @@ static inline Vec3 _vec3_f64_cross(const Vec3 a, const Vec3 b) {
     } 
     Vec3 result;
     result.dtype = VEC3_DOUBLE;
-    result.data.f64[0] = a.data.f64[1] * b.data.f64[2] - b.data.f64[2] * a.data.f64[1]; 
-    result.data.f64[1] = a.data.f64[2] * b.data.f64[0] - b.data.f64[0] * a.data.f64[2]; 
-    result.data.f64[2] = a.data.f64[0] * b.data.f64[1] - b.data.f64[1] * a.data.f64[0]; 
+    result.data.f64[0] = a.data.f64[1] * b.data.f64[2] - a.data.f64[2] * b.data.f64[1]; 
+    result.data.f64[1] = a.data.f64[2] * b.data.f64[0] - a.data.f64[0] * b.data.f64[2]; 
+    result.data.f64[2] = a.data.f64[0] * b.data.f64[1] - a.data.f64[1] * b.data.f64[0]; 
     return result;
 }
 
@@ -1166,9 +1215,9 @@ static inline Vec3 _vec3_i32_cross(const Vec3 a, const Vec3 b) {
     } 
     Vec3 result;
     result.dtype = VEC3_INT;
-    result.data.i32[0] = a.data.i32[1] * b.data.i32[2] - b.data.i32[2] * a.data.i32[1]; 
-    result.data.i32[1] = a.data.i32[2] * b.data.i32[0] - b.data.i32[0] * a.data.i32[2]; 
-    result.data.i32[2] = a.data.i32[0] * b.data.i32[1] - b.data.i32[1] * a.data.i32[0]; 
+    result.data.i32[0] = a.data.i32[1] * b.data.i32[2] - a.data.i32[2] * b.data.i32[1]; 
+    result.data.i32[1] = a.data.i32[2] * b.data.i32[0] - a.data.i32[0] * b.data.i32[2]; 
+    result.data.i32[2] = a.data.i32[0] * b.data.i32[1] - a.data.i32[1] * b.data.i32[0]; 
     return result;
 }
 
@@ -1180,9 +1229,9 @@ static inline Vec3 _vec3_i16_cross(const Vec3 a, const Vec3 b) {
     } 
     Vec3 result;
     result.dtype = VEC3_SHORT;
-    result.data.i16[0] = a.data.i16[1] * b.data.i16[2] - b.data.i16[2] * a.data.i16[1]; 
-    result.data.i16[1] = a.data.i16[2] * b.data.i16[0] - b.data.i16[0] * a.data.i16[2]; 
-    result.data.i16[2] = a.data.i16[0] * b.data.i16[1] - b.data.i16[1] * a.data.i16[0]; 
+    result.data.i16[0] = a.data.i16[1] * b.data.i16[2] - a.data.i16[2] * b.data.i16[1]; 
+    result.data.i16[1] = a.data.i16[2] * b.data.i16[0] - a.data.i16[0] * b.data.i16[2]; 
+    result.data.i16[2] = a.data.i16[0] * b.data.i16[1] - a.data.i16[1] * b.data.i16[0]; 
     return result;
 }
 
@@ -1221,22 +1270,28 @@ static inline Vec3 vec3_ceil(const Vec3 a) {
   return vec; 
 }
 
-
-
 static inline Vec3 vec3_add(const Vec3 a, const Vec3 b) {
   Vec3 result;
+  // added for debug purposes!
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
+  
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_add(a, b);
+      result = _vec3_f32_add(a, _opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_add(a,b);
+      result = _vec3_f64_add(a, _opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_add(a,b);
+      result = _vec3_i32_add(a,_opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_add(a,b);
+      result = _vec3_i16_add(a,_opt_cast);
       break;
   }
   return result;
@@ -1244,18 +1299,25 @@ static inline Vec3 vec3_add(const Vec3 a, const Vec3 b) {
 
 static inline Vec3 vec3_sub(const Vec3 a, const Vec3 b) {
   Vec3 result;
+
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_sub(a, b);
+      result = _vec3_f32_sub(a, _opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_sub(a,b);
+      result = _vec3_f64_sub(a, _opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_sub(a,b);
+      result = _vec3_i32_sub(a, _opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_sub(a,b);
+      result = _vec3_i16_sub(a, _opt_cast);
       break;
   }
   return result;
@@ -1265,18 +1327,25 @@ static inline Vec3 vec3_sub(const Vec3 a, const Vec3 b) {
 
 static inline Vec3 vec3_mul(const Vec3 a, const Vec3 b) {
   Vec3 result;
+
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_mul(a, b);
+      result = _vec3_f32_mul(a, _opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_mul(a,b);
+      result = _vec3_f64_mul(a,_opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_mul(a,b);
+      result = _vec3_i32_mul(a, _opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_mul(a,b);
+      result = _vec3_i16_mul(a, _opt_cast);
       break;
   }
   return result;
@@ -1284,18 +1353,24 @@ static inline Vec3 vec3_mul(const Vec3 a, const Vec3 b) {
 
 static inline Vec3 vec3_div(const Vec3 a, const Vec3 b) {
   Vec3 result;
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_div(a, b);
+      result = _vec3_f32_div(a, _opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_div(a,b);
+      result = _vec3_f64_div(a, _opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_div(a,b);
+      result = _vec3_i32_div(a, _opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_div(a,b);
+      result = _vec3_i16_div(a, _opt_cast);
       break;
   }
   return result;
@@ -1303,18 +1378,24 @@ static inline Vec3 vec3_div(const Vec3 a, const Vec3 b) {
 
 static inline Vec3 vec3_cross(const Vec3 a, const Vec3 b) {
   Vec3 result;
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_cross(a, b);
+      result = _vec3_f32_cross(a, _opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_cross(a,b);
+      result = _vec3_f64_cross(a, _opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_cross(a,b);
+      result = _vec3_i32_cross(a, _opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_cross(a,b);
+      result = _vec3_i16_cross(a, _opt_cast);
       break;
   }
   return result;
@@ -1323,18 +1404,25 @@ static inline Vec3 vec3_cross(const Vec3 a, const Vec3 b) {
 
 static inline Vec3 vec3_mod(const Vec3 a, const Vec3 b) {
   Vec3 result;
+
+  Vec3 _opt_cast;
+  if (a.dtype != b.dtype) {
+    _opt_cast = _vec3_cast(b, a.dtype); 
+  } else {
+    _opt_cast = b;
+  }
   switch (a.dtype) {
     case VEC3_FLOAT:
-      result = _vec3_f32_mod(a, b);
+      result = _vec3_f32_mod(a,_opt_cast);
       break;
     case VEC3_DOUBLE:
-      result = _vec3_f64_mod(a,b);
+      result = _vec3_f64_mod(a,_opt_cast);
       break;
     case VEC3_INT:
-      result = _vec3_i32_mod(a,b);
+      result = _vec3_i32_mod(a,_opt_cast);
       break;
     case VEC3_SHORT:
-      result = _vec3_i16_mod(a,b);
+      result = _vec3_i16_mod(a,_opt_cast);
       break;
   }
   return result;
@@ -1415,7 +1503,6 @@ static inline double vec3_lengthsq(const Vec3 a) {
   Vec3 _a = vec3_mul(a, a);
   return vec3_sum(_a);
 }
-
 
 
 #ifdef __cplusplus
